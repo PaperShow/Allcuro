@@ -61,9 +61,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final session = ref.read(authViewModelProvider).valueOrNull;
       final path = state.matchedLocation;
 
+      // Allow splash screen to display its animation on launch
+      if (path == AppRoutes.splash) {
+        return null;
+      }
+
       // Still reading the persisted session from disk — park on the splash screen
       if (session == null) {
-        return path == AppRoutes.splash ? null : AppRoutes.splash;
+        return AppRoutes.splash;
       }
       if (!session.isLoggedIn) {
         final onPreAuthRoute =
@@ -88,8 +93,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return path == signupRoute ? null : signupRoute;
       }
 
-      if (path == AppRoutes.splash ||
-          path == AppRoutes.welcome ||
+      if (path == AppRoutes.welcome ||
           path == AppRoutes.phoneAuth ||
           path == AppRoutes.roleSelect ||
           path == signupRoute) {

@@ -44,11 +44,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final notifier = ref.read(onboardingViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.primaryDeep,
-      body: DecoratedBox(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
         child: SafeArea(
           child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
+            ),
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

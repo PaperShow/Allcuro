@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/ui/app_shell.dart';
 import '../../../core/ui/surface.dart';
-import '../../../core/ui/tappable.dart';
 import '../../../core/utils/currency.dart';
 import '../../bookings/data/models/booking.dart';
 import '../../bookings/presentation/bookings_view_model.dart';
@@ -71,113 +70,38 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         physics: const BouncingScrollPhysics(),
         children: [
           // -------------------------------------------------------------
-          // 1. TOP HEADER: Location, 24/7 SOS & Search
+          // 1. TOP SEARCH BAR (Location & Quick Actions are in Green Header)
           // -------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Location Chip
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: AppColors.primarySoft,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                        border: Border.all(color: AppColors.primary.withValues(alpha: 0.15)),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.location_on_rounded, size: 14, color: AppColors.primary),
-                          SizedBox(width: 4),
-                          Text(
-                            'Indiranagar, Bengaluru',
-                            style: TextStyle(
-                              fontSize: 11.5,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                          SizedBox(width: 2),
-                          Icon(Icons.keyboard_arrow_down_rounded, size: 15, color: AppColors.primary),
-                        ],
-                      ),
-                    ),
-
-                    // Quick SOS Emergency Button
-                    Tappable(
-                      onTap: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('🚨 Connecting you to 24/7 ALLCURO Emergency Medical HQ...'),
-                            backgroundColor: Color(0xFFDC2626),
-                          ),
-                        );
-                      },
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFEE2E2),
-                          borderRadius: BorderRadius.circular(AppRadius.pill),
-                          border: Border.all(color: const Color(0xFFFECACA)),
-                        ),
-                        child: const Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.emergency_rounded, size: 13, color: Color(0xFFDC2626)),
-                            SizedBox(width: 4),
-                            Text(
-                              '24/7 SOS',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w800,
-                                color: Color(0xFFDC2626),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 12),
-
-                // Search Bar
-                Container(
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: AppColors.card,
-                    border: Border.all(color: AppColors.border),
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
+            child: Container(
+              height: 48,
+              decoration: BoxDecoration(
+                color: AppColors.card,
+                border: Border.all(color: AppColors.border),
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.03),
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
                   ),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search nurses, centres, ICU beds, oxygen...',
-                      hintStyle: const TextStyle(fontSize: 13, color: AppColors.mutedForeground),
-                      prefixIcon: const Icon(Icons.search_rounded, color: AppColors.mutedForeground, size: 20),
-                      suffixIcon: Container(
-                        margin: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
-                        child: const Icon(Icons.tune_rounded, size: 15, color: AppColors.ink),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 13),
-                    ),
+                ],
+              ),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: 'Search nurses, centres, ICU beds, oxygen...',
+                  hintStyle: const TextStyle(fontSize: 13, color: AppColors.mutedForeground),
+                  prefixIcon: const Icon(Icons.search_rounded, color: AppColors.mutedForeground, size: 20),
+                  suffixIcon: Container(
+                    margin: const EdgeInsets.all(6),
+                    decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
+                    child: const Icon(Icons.tune_rounded, size: 15, color: AppColors.ink),
                   ),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(vertical: 13),
                 ),
-              ],
+              ),
             ),
           ),
 
@@ -300,61 +224,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: _ActiveBookingLiveCard(booking: activeBooking),
             ),
           ],
-
-          // -------------------------------------------------------------
-          // 5. QUICK URGENT BOOKING BANNER (< 45 min)
-          // -------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFFFFF1F2), Color(0xFFFFE4E6)],
-                ),
-                borderRadius: BorderRadius.circular(AppRadius.xxl),
-                border: Border.all(color: const Color(0xFFFECDD3)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 36,
-                    height: 36,
-                    alignment: Alignment.center,
-                    decoration: const BoxDecoration(color: Color(0xFFE11D48), shape: BoxShape.circle),
-                    child: const Icon(Icons.bolt_rounded, size: 20, color: Colors.white),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Need Care in < 45 Mins?',
-                          style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: Color(0xFF9F1239)),
-                        ),
-                        Text(
-                          'Instant home routing for vital checks & IV injections',
-                          style: TextStyle(fontSize: 11, color: Color(0xFFBE123C)),
-                        ),
-                      ],
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () => context.push('/nurse-quick-booking'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFE11D48),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
-                      elevation: 0,
-                    ),
-                    child: const Text('Quick Book', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
-                  ),
-                ],
-              ),
-            ),
-          ),
 
           // -------------------------------------------------------------
           // 6. TOP LISTINGS AIRBNB-STYLE DIRECT FEED

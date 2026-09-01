@@ -9,6 +9,7 @@ void main() {
     SharedPreferences.setMockInitialValues({});
 
     await tester.pumpWidget(const ProviderScope(child: AllcuroPartnerApp()));
+    await tester.pump(const Duration(seconds: 3));
     await tester.pumpAndSettle();
 
     expect(find.text('ALLCURO PARTNER'), findsWidgets);

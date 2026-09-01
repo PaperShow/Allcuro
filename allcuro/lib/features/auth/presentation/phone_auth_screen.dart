@@ -70,8 +70,10 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
     final notifier = ref.read(phoneAuthViewModelProvider.notifier);
 
     return Scaffold(
-      backgroundColor: AppColors.primaryDeep,
-      body: DecoratedBox(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
         child: SafeArea(
           child: LayoutBuilder(
