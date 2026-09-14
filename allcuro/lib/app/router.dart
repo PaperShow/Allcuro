@@ -17,6 +17,7 @@ import '../features/nurses/presentation/nurses_list/nurses_list_screen.dart';
 import '../features/nurses/presentation/quick_booking/nurse_quick_booking_screen.dart';
 import '../features/nurses/presentation/tracker/nurse_booking_tracker_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/services/presentation/service_detail_screen.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/splash',
@@ -29,6 +30,7 @@ final GoRouter appRouter = GoRouter(
       path: '/welcome',
       builder: (context, state) => WelcomeScreen(
         onGetStarted: () => context.push('/auth/phone'),
+        onExploreGuest: () => context.go('/'),
       ),
     ),
     GoRoute(
@@ -47,6 +49,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/services/:serviceId',
+      builder: (context, state) => ServiceDetailScreen(
+        serviceId: state.pathParameters['serviceId'] ?? 'quick-care',
+      ),
     ),
     GoRoute(
       path: '/nurses',

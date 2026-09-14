@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 
 import '../../../core/theme/app_theme.dart';
 
-/// First screen a signed-out customer sees. Branded intro with primary CTA to start.
+/// First screen a signed-out customer sees. Branded intro with primary CTA to start
+/// and option to explore as a guest without signing up immediately.
 class WelcomeScreen extends StatelessWidget {
   final VoidCallback onGetStarted;
+  final VoidCallback onExploreGuest;
 
-  const WelcomeScreen({super.key, required this.onGetStarted});
+  const WelcomeScreen({
+    super.key,
+    required this.onGetStarted,
+    required this.onExploreGuest,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +41,7 @@ class WelcomeScreen extends StatelessWidget {
             ),
             SafeArea(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
+                padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -86,7 +92,8 @@ class WelcomeScreen extends StatelessWidget {
                         color: AppColors.primaryForeground.withValues(alpha: 0.82),
                       ),
                     ),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 32),
+                    // Primary CTA: Get Started / Log In
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
@@ -94,7 +101,7 @@ class WelcomeScreen extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.accent,
                           foregroundColor: AppColors.accentForeground,
-                          padding: const EdgeInsets.symmetric(vertical: 18),
+                          padding: const EdgeInsets.symmetric(vertical: 17),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.pill),
                           ),
@@ -104,11 +111,41 @@ class WelcomeScreen extends StatelessWidget {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              'Get started',
+                              'Sign In / Register',
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
                             ),
                             SizedBox(width: 8),
                             Icon(Icons.arrow_forward_rounded, size: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Secondary CTA: Explore as Guest
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: onExploreGuest,
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppColors.primaryForeground,
+                          side: BorderSide(
+                            color: AppColors.primaryForeground.withValues(alpha: 0.35),
+                            width: 1.2,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.explore_outlined, size: 19, color: AppColors.primaryForeground),
+                            SizedBox(width: 8),
+                            Text(
+                              'Explore as Guest',
+                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                            ),
                           ],
                         ),
                       ),
