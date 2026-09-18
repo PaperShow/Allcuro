@@ -93,60 +93,58 @@ class WelcomeScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    // Primary CTA: Get Started / Log In
+                    // Primary CTA: Sign In / Register (Minimal white pill)
                     SizedBox(
                       width: double.infinity,
+                      height: 48,
                       child: ElevatedButton(
                         onPressed: onGetStarted,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.accent,
-                          foregroundColor: AppColors.accentForeground,
-                          padding: const EdgeInsets.symmetric(vertical: 17),
+                          backgroundColor: Colors.white,
+                          foregroundColor: const Color(0xFF0F766E),
+                          elevation: 0,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.pill),
                           ),
-                          elevation: 0,
                         ),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
                               'Sign In / Register',
-                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+                              style: TextStyle(
+                                fontSize: 14.5,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: -0.2,
+                              ),
                             ),
-                            SizedBox(width: 8),
-                            Icon(Icons.arrow_forward_rounded, size: 20),
+                            SizedBox(width: 6),
+                            Icon(Icons.arrow_forward_rounded, size: 16),
                           ],
                         ),
                       ),
                     ),
-                    const SizedBox(height: 12),
-                    // Secondary CTA: Explore as Guest
+                    const SizedBox(height: 6),
+                    // Secondary CTA: Explore as Guest (Minimal text button)
                     SizedBox(
                       width: double.infinity,
-                      child: OutlinedButton(
+                      height: 42,
+                      child: TextButton(
                         onPressed: onExploreGuest,
-                        style: OutlinedButton.styleFrom(
+                        style: TextButton.styleFrom(
                           foregroundColor: AppColors.primaryForeground,
-                          side: BorderSide(
-                            color: AppColors.primaryForeground.withValues(alpha: 0.35),
-                            width: 1.2,
-                          ),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(AppRadius.pill),
                           ),
                         ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(Icons.explore_outlined, size: 19, color: AppColors.primaryForeground),
-                            SizedBox(width: 8),
-                            Text(
-                              'Explore as Guest',
-                              style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
-                            ),
-                          ],
+                        child: Text(
+                          'Explore as Guest ➔',
+                          style: TextStyle(
+                            fontSize: 13.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.primaryForeground.withValues(alpha: 0.9),
+                          ),
                         ),
                       ),
                     ),

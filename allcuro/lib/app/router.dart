@@ -17,6 +17,7 @@ import '../features/nurses/presentation/nurses_list/nurses_list_screen.dart';
 import '../features/nurses/presentation/quick_booking/nurse_quick_booking_screen.dart';
 import '../features/nurses/presentation/tracker/nurse_booking_tracker_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/services/presentation/all_nurse_services_screen.dart';
 import '../features/services/presentation/service_detail_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -49,6 +50,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) => const HomeScreen(),
+    ),
+    GoRoute(
+      path: '/nurse-services',
+      builder: (context, state) => const AllNurseServicesScreen(),
     ),
     GoRoute(
       path: '/services/:serviceId',

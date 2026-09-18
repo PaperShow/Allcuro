@@ -36,7 +36,13 @@ class NursesListScreen extends ConsumerWidget {
           ScreenHeader(
             title: 'Nurses & Attendants',
             subtitle: '100% police-verified & background checked care professionals',
-            onBack: () => context.go('/'),
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
+            },
           ),
           SizedBox(
             height: 40,

@@ -8,8 +8,7 @@ import '../../../core/ui/surface.dart';
 import '../../../core/utils/currency.dart';
 import '../../auth/presentation/auth_view_model.dart';
 import '../../auth/presentation/quick_login_sheet.dart';
-import '../../bookings/data/models/booking.dart';
-import '../../bookings/presentation/bookings_view_model.dart';
+
 import '../../centres/data/models/centre.dart';
 import '../../nurses/data/models/nurse.dart';
 import '../../services/data/models/service_category.dart';
@@ -52,7 +51,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final homeAsync = ref.watch(homeViewModelProvider);
-    final bookingsAsync = ref.watch(bookingsViewModelProvider);
     final authState = ref.watch(authViewModelProvider);
 
     final isGuest = authState.status == AuthStatus.unauthenticated || authState.status == AuthStatus.unknown;
@@ -61,15 +59,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ? '👤'
         : (userName.isNotEmpty ? userName.split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join() : 'AC');
 
-    // Find active ongoing booking
-    Booking? activeBooking;
-    final bookings = bookingsAsync.valueOrNull ?? [];
-    for (final b in bookings) {
-      if (b.status == 'In Progress' || b.status == 'Confirmed' || b.status == 'Active') {
-        activeBooking = b;
-        break;
-      }
-    }
 
     final allServices = ServicesCatalog.allServices;
     final filteredServices = _searchQuery.isEmpty
@@ -145,101 +134,150 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
 
-          // -----------------------------------------------------------------
-          // 2. ACTIVE LIVE BOOKING CARD (If any)
-          // -----------------------------------------------------------------
-          if (activeBooking != null) ...[
+          if (_searchQuery.isNotEmpty) ...[
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 14),
-              child: _ActiveBookingLiveCard(booking: activeBooking),
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
+              child: Text(
+                'Matching Services (${filteredServices.length})',
+                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
+              ),
             ),
-          ],
-
-          // -----------------------------------------------------------------
-          // 3. URBAN COMPANY-STYLE SERVICES GRID (Cubes / Grid Tiles)
-          // -----------------------------------------------------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: 0.74,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 4,
+                ),
+                itemCount: filteredServices.length,
+                itemBuilder: (context, index) {
+                  final service = filteredServices[index];
+                  return _ServiceCubeTile(
+                    service: service,
+                    onTap: () {
+                      if (service.id == 'quick-care') {
+                        _handleBookingGuard(() => context.push('/nurse-quick-booking'));
+                      } else if (service.id == 'care-centres') {
+                        context.push('/centres');
+                      } else if (service.id == 'equipment-rental') {
+                        context.push('/equipment');
+                      } else if (service.id == 'doctor-visit') {
+                        context.push('/nurses');
+                      } else {
+                        context.push('/services/${service.id}');
+                      }
+                    },
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+          ] else ...[
+            // -----------------------------------------------------------------
+            // 2. OUR NURSE CARE (8 Grid Items: 7 Clinical + 8th See All)
+            // -----------------------------------------------------------------
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 4, 20, 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Our Healthcare Services',
-                        style: TextStyle(
-                          fontSize: 16.5,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: -0.3,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                      Text(
-                        'Verified nurses, care centres & certified procedures',
-                        style: TextStyle(fontSize: 11.5, color: AppColors.mutedForeground),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                  decoration: BoxDecoration(
-                    color: AppColors.primarySoft,
-                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                  ),
-                  child: const Text(
-                    'At-Home & Centre',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppColors.primary),
-                  ),
-                ),
-              ],
+            padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
+            child: const Text(
+              'Our Nurse Care',
+              style: TextStyle(
+                fontSize: 16.5,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.3,
+                color: AppColors.ink,
+              ),
             ),
           ),
 
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.builder(
+            child: GridView.count(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                childAspectRatio: 0.74,
-                crossAxisSpacing: 8,
-                mainAxisSpacing: 4,
-              ),
-              itemCount: filteredServices.length,
-              itemBuilder: (context, index) {
-                final service = filteredServices[index];
-                return _ServiceCubeTile(
-                  service: service,
-                  onTap: () {
-                    if (service.id == 'quick-care') {
-                      _handleBookingGuard(() => context.push('/nurse-quick-booking'));
-                    } else if (service.id == 'care-centres') {
-                      context.push('/centres');
-                    } else if (service.id == 'equipment-rental') {
-                      context.push('/equipment');
-                    } else if (service.id == 'doctor-visit') {
-                      context.push('/nurses');
-                    } else {
-                      // Navigate to filtered listing: nurses/centres/equipment relevant to this service
-                      context.push('/services/${service.id}');
-                    }
-                  },
-                );
-              },
+              crossAxisCount: 4,
+              childAspectRatio: 0.74,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 6,
+              children: [
+                _HomeGridItem(
+                  title: 'Catheter Care',
+                  icon: Icons.medical_services_rounded,
+                  iconColor: const Color(0xFF7C3AED),
+                  iconBg: const Color(0xFFEDE9FE),
+                  imageAsset: 'assets/images/services/catheter_care.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'Ryles Tube',
+                  icon: Icons.medication_liquid_rounded,
+                  iconColor: const Color(0xFFEA580C),
+                  iconBg: const Color(0xFFFFEDD5),
+                  imageAsset: 'assets/images/services/ryles_tube.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'Wound Dressing',
+                  icon: Icons.healing_rounded,
+                  iconColor: const Color(0xFF0D9488),
+                  iconBg: const Color(0xFFCCFBF1),
+                  imageAsset: 'assets/images/services/wound_dressing.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'Injection',
+                  icon: Icons.vaccines_rounded,
+                  iconColor: const Color(0xFF2563EB),
+                  iconBg: const Color(0xFFDBEAFE),
+                  imageAsset: 'assets/images/services/injection.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'IV Care',
+                  icon: Icons.water_drop_rounded,
+                  iconColor: const Color(0xFF0284C7),
+                  iconBg: const Color(0xFFE0F2FE),
+                  imageAsset: 'assets/images/services/iv_care.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'Tracheostomy',
+                  icon: Icons.masks_rounded,
+                  iconColor: const Color(0xFFDC2626),
+                  iconBg: const Color(0xFFFEE2E2),
+                  imageAsset: 'assets/images/services/tracheostomy.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'Vital Monitoring',
+                  icon: Icons.monitor_heart_rounded,
+                  iconColor: const Color(0xFFE11D48),
+                  iconBg: const Color(0xFFFFE4E6),
+                  imageAsset: 'assets/images/services/vital_monitoring.jpg',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                _HomeGridItem(
+                  title: 'See All',
+                  icon: Icons.grid_view_rounded,
+                  iconColor: AppColors.primary,
+                  iconBg: AppColors.primarySoft,
+                  imageAsset: 'assets/images/services/see_all.jpg',
+                  isSeeAll: true,
+                  onTap: () => context.push('/nurse-services'),
+                ),
+              ],
             ),
           ),
 
           const SizedBox(height: 18),
 
           // -----------------------------------------------------------------
-          // 4. QUICK 45-MIN CARE PROMO BANNER
+          // 3. QUICK 45-MIN CARE PROMO BANNER
           // -----------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -314,7 +352,249 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 22),
+
+          // -----------------------------------------------------------------
+          // 4. HEALTHCARE SERVICES (Nursing Services, Care Centres, Equipments, Physio, Doctor, Elder, Baby/Mother, Physio Rehab)
+          // -----------------------------------------------------------------
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  'HealthCare Services',
+                  style: TextStyle(
+                    fontSize: 16.5,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.3,
+                    color: AppColors.ink,
+                  ),
+                ),
+                InkWell(
+                  onTap: () => context.push('/nurse-services'),
+                  child: const Text(
+                    'View all ➔',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: GridView.count(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: EdgeInsets.zero,
+              crossAxisCount: 4,
+              childAspectRatio: 0.74,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 6,
+              children: [
+                // 1. Nursing Services
+                _HomeGridItem(
+                  title: 'Nursing Services',
+                  icon: Icons.medical_services_rounded,
+                  iconColor: const Color(0xFF0F766E),
+                  iconBg: const Color(0xFFCCFBF1),
+                  imageAsset: 'assets/images/services/nursing_services.jpg',
+                  badgeText: 'All List',
+                  onTap: () => context.push('/nurse-services'),
+                ),
+                // 2. Care Centres (2nd Position as requested)
+                _HomeGridItem(
+                  title: 'Care Centres',
+                  icon: Icons.apartment_rounded,
+                  iconColor: const Color(0xFF0284C7),
+                  iconBg: const Color(0xFFE0F2FE),
+                  imageAsset: 'assets/images/services/care_centres.jpg',
+                  onTap: () => context.push('/centres'),
+                ),
+                // 3. Equipment’s (3rd Position as requested)
+                _HomeGridItem(
+                  title: 'Equipment’s',
+                  icon: Icons.wheelchair_pickup_rounded,
+                  iconColor: const Color(0xFF16A34A),
+                  iconBg: const Color(0xFFDCFCE7),
+                  imageAsset: 'assets/images/services/equipment.jpg',
+                  onTap: () => context.push('/equipment'),
+                ),
+                // 4. Physiotherapy
+                _HomeGridItem(
+                  title: 'Physiotherapy',
+                  icon: Icons.accessibility_new_rounded,
+                  iconColor: const Color(0xFF4F46E5),
+                  iconBg: const Color(0xFFE0E7FF),
+                  imageAsset: 'assets/images/services/physiotherapy.jpg',
+                  onTap: () => context.push('/services/physiotherapy'),
+                ),
+                // 5. Doctor Visit
+                _HomeGridItem(
+                  title: 'Doctor Visit',
+                  icon: Icons.medical_information_rounded,
+                  iconColor: const Color(0xFF9333EA),
+                  iconBg: const Color(0xFFF3E8FF),
+                  imageAsset: 'assets/images/services/doctor_visit.jpg',
+                  onTap: () => context.push('/services/doctor-visit'),
+                ),
+                // 6. Elder Care
+                _HomeGridItem(
+                  title: 'Elder Care',
+                  icon: Icons.elderly_rounded,
+                  iconColor: const Color(0xFFD97706),
+                  iconBg: const Color(0xFFFEF3C7),
+                  onTap: () => context.push('/services/elderly-attendant'),
+                ),
+                // 7. Baby / Mother
+                _HomeGridItem(
+                  title: 'Baby / Mother',
+                  icon: Icons.child_care_rounded,
+                  iconColor: const Color(0xFFDB2777),
+                  iconBg: const Color(0xFFFCE7F3),
+                  onTap: () => context.push('/services/maternal-baby'),
+                ),
+                // 8. Physio Services
+                _HomeGridItem(
+                  title: 'Physio Services',
+                  icon: Icons.fitness_center_rounded,
+                  iconColor: const Color(0xFF2563EB),
+                  iconBg: const Color(0xFFDBEAFE),
+                  imageAsset: 'assets/images/services/physiotherapy.jpg',
+                  onTap: () => context.push('/services/physiotherapy'),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 22),
+
+          // -----------------------------------------------------------------
+          // 5. BANNER: EXPLORE OUR HEALTH CARE CENTRES
+          // -----------------------------------------------------------------
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: InkWell(
+              onTap: () => context.push('/centres'),
+              borderRadius: BorderRadius.circular(AppRadius.xl),
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [Color(0xFF075985), Color(0xFF0369A1)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(AppRadius.xl),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFF075985).withValues(alpha: 0.25),
+                      blurRadius: 14,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(AppRadius.lg),
+                            border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
+                          ),
+                          child: const Icon(Icons.apartment_rounded, size: 26, color: Colors.white),
+                        ),
+                        const SizedBox(width: 14),
+                        const Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  Text(
+                                    'Explore Health Care Centres',
+                                    style: TextStyle(
+                                      fontSize: 14.5,
+                                      fontWeight: FontWeight.w800,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  SizedBox(width: 6),
+                                  Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
+                                ],
+                              ),
+                              SizedBox(height: 2),
+                              Text(
+                                'Audited 24/7 ICU step-down, rehab & senior living centres',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Color(0xFFE0F2FE),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: const Text(
+                            '✓ Field Audited',
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: const Text(
+                            '✓ 1:3 Nurse Ratio',
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.18),
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: const Text(
+                            '✓ Doctor on Call',
+                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+
+        const SizedBox(height: 24),
 
           // -----------------------------------------------------------------
           // 5. TOP VERIFIED NURSES (Curated Section with Degree Badges)
@@ -581,6 +861,122 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// HOME GRID ITEM (Nurse Care & Healthcare Services Grid)
+// ---------------------------------------------------------------------------
+class _HomeGridItem extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color iconColor;
+  final Color iconBg;
+  final VoidCallback onTap;
+  final bool isSeeAll;
+  final String? badgeText;
+  final String? imageAsset;
+
+  const _HomeGridItem({
+    required this.title,
+    required this.icon,
+    required this.iconColor,
+    required this.iconBg,
+    required this.onTap,
+    this.isSeeAll = false,
+    this.badgeText,
+    this.imageAsset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: iconBg,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  boxShadow: [
+                    BoxShadow(
+                      color: iconColor.withValues(alpha: 0.12),
+                      blurRadius: 6,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                  border: Border.all(
+                    color: iconColor.withValues(alpha: isSeeAll ? 0.5 : 0.2),
+                    width: isSeeAll ? 1.5 : 1,
+                  ),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.lg - 1),
+                  child: imageAsset != null
+                      ? Image.asset(
+                          imageAsset!,
+                          fit: BoxFit.cover,
+                          width: 60,
+                          height: 60,
+                          errorBuilder: (_, _, _) => Icon(
+                            icon,
+                            size: isSeeAll ? 26 : 28,
+                            color: iconColor,
+                          ),
+                        )
+                      : Icon(
+                          icon,
+                          size: isSeeAll ? 26 : 28,
+                          color: iconColor,
+                        ),
+                ),
+              ),
+              if (badgeText != null)
+                Positioned(
+                  top: -4,
+                  right: -4,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: Text(
+                      badgeText!,
+                      style: const TextStyle(
+                        fontSize: 7.5,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: isSeeAll ? FontWeight.w900 : FontWeight.w700,
+              height: 1.15,
+              color: isSeeAll ? AppColors.primary : AppColors.ink,
             ),
           ),
         ],
@@ -998,134 +1394,6 @@ class _TrustBadgeItem extends StatelessWidget {
         Text(title, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.ink)),
         Text(subtitle, style: const TextStyle(fontSize: 9.5, color: AppColors.mutedForeground)),
       ],
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// ACTIVE BOOKING LIVE CARD
-// ---------------------------------------------------------------------------
-class _ActiveBookingLiveCard extends StatelessWidget {
-  final Booking booking;
-
-  const _ActiveBookingLiveCard({required this.booking});
-
-  @override
-  Widget build(BuildContext context) {
-    final isNurse = booking.type == BookingType.nurse;
-    final isCentre = booking.type == BookingType.careCentre;
-
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(AppRadius.xl),
-        border: Border.all(color: AppColors.primary, width: 1.5),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
-          ),
-        ],
-      ),
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: AppColors.primarySoft,
-                  borderRadius: BorderRadius.circular(AppRadius.pill),
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      isNurse ? 'NURSE ON THE WAY · LIVE VISIT' : 'CARE CENTRE ADMISSION PASS',
-                      style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.primary),
-                    ),
-                  ],
-                ),
-              ),
-              const Spacer(),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: AppColors.secondary,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-                child: Text(
-                  'OTP: ${booking.otp}',
-                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w900, color: AppColors.primary),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Container(
-                width: 40,
-                height: 40,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-                child: Icon(isNurse ? Icons.directions_walk_rounded : Icons.apartment, color: AppColors.primary, size: 20),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      booking.title,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.ink),
-                    ),
-                    Text(
-                      isNurse
-                          ? 'Share OTP ${booking.otp} upon nurse arrival to activate service'
-                          : 'Show OTP ${booking.otp} at centre desk to complete check-in',
-                      style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () {
-                  if (isNurse) {
-                    context.push('/nurse-tracker/${booking.id}');
-                  } else if (isCentre) {
-                    context.push('/centre-pass/${booking.id}');
-                  } else {
-                    context.push('/bookings');
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.lg)),
-                  elevation: 0,
-                ),
-                child: Text(
-                  isNurse ? 'Track Nurse' : 'View Pass',
-                  style: const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
