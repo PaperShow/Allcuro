@@ -85,8 +85,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
       },
       child: ListView(
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         padding: EdgeInsets.zero,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           // -----------------------------------------------------------------
           // 1. TOP SEARCH BAR (Clean, modern, prominent)
@@ -109,6 +110,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               child: TextField(
                 controller: _searchController,
+                onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                 onChanged: (val) => setState(() => _searchQuery = val.trim()),
                 decoration: InputDecoration(
                   hintText: 'Search injections, wound dressing, nurses, ICU beds...',
@@ -201,72 +203,55 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               crossAxisCount: 4,
-              childAspectRatio: 0.74,
+              childAspectRatio: 0.70,
               crossAxisSpacing: 8,
-              mainAxisSpacing: 6,
+              mainAxisSpacing: 10,
               children: [
                 _HomeGridItem(
                   title: 'Catheter Care',
-                  icon: Icons.medical_services_rounded,
-                  iconColor: const Color(0xFF7C3AED),
-                  iconBg: const Color(0xFFEDE9FE),
                   imageAsset: 'assets/images/services/catheter_care.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.medical_services_rounded,
+                  onTap: () => context.push('/nurses?service=Catheter Care'),
                 ),
                 _HomeGridItem(
                   title: 'Ryles Tube',
-                  icon: Icons.medication_liquid_rounded,
-                  iconColor: const Color(0xFFEA580C),
-                  iconBg: const Color(0xFFFFEDD5),
                   imageAsset: 'assets/images/services/ryles_tube.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.medication_liquid_rounded,
+                  onTap: () => context.push('/nurses?service=Ryles Tube'),
                 ),
                 _HomeGridItem(
                   title: 'Wound Dressing',
-                  icon: Icons.healing_rounded,
-                  iconColor: const Color(0xFF0D9488),
-                  iconBg: const Color(0xFFCCFBF1),
                   imageAsset: 'assets/images/services/wound_dressing.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.healing_rounded,
+                  onTap: () => context.push('/nurses?service=Wound Dressing'),
                 ),
                 _HomeGridItem(
                   title: 'Injection',
-                  icon: Icons.vaccines_rounded,
-                  iconColor: const Color(0xFF2563EB),
-                  iconBg: const Color(0xFFDBEAFE),
                   imageAsset: 'assets/images/services/injection.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.vaccines_rounded,
+                  onTap: () => context.push('/nurses?service=Injection'),
                 ),
                 _HomeGridItem(
                   title: 'IV Care',
-                  icon: Icons.water_drop_rounded,
-                  iconColor: const Color(0xFF0284C7),
-                  iconBg: const Color(0xFFE0F2FE),
                   imageAsset: 'assets/images/services/iv_care.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.water_drop_rounded,
+                  onTap: () => context.push('/nurses?service=IV Care'),
                 ),
                 _HomeGridItem(
                   title: 'Tracheostomy',
-                  icon: Icons.masks_rounded,
-                  iconColor: const Color(0xFFDC2626),
-                  iconBg: const Color(0xFFFEE2E2),
                   imageAsset: 'assets/images/services/tracheostomy.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.masks_rounded,
+                  onTap: () => context.push('/nurses?service=Tracheostomy'),
                 ),
                 _HomeGridItem(
                   title: 'Vital Monitoring',
-                  icon: Icons.monitor_heart_rounded,
-                  iconColor: const Color(0xFFE11D48),
-                  iconBg: const Color(0xFFFFE4E6),
                   imageAsset: 'assets/images/services/vital_monitoring.jpg',
-                  onTap: () => context.push('/nurse-services'),
+                  icon: Icons.monitor_heart_rounded,
+                  onTap: () => context.push('/nurses?service=Vital Monitoring'),
                 ),
                 _HomeGridItem(
                   title: 'See All',
                   icon: Icons.grid_view_rounded,
-                  iconColor: AppColors.primary,
-                  iconBg: AppColors.primarySoft,
-                  imageAsset: 'assets/images/services/see_all.jpg',
                   isSeeAll: true,
                   onTap: () => context.push('/nurse-services'),
                 ),
@@ -393,79 +378,63 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               physics: const NeverScrollableScrollPhysics(),
               padding: EdgeInsets.zero,
               crossAxisCount: 4,
-              childAspectRatio: 0.74,
+              childAspectRatio: 0.70,
               crossAxisSpacing: 8,
-              mainAxisSpacing: 6,
+              mainAxisSpacing: 10,
               children: [
                 // 1. Nursing Services
                 _HomeGridItem(
                   title: 'Nursing Services',
-                  icon: Icons.medical_services_rounded,
-                  iconColor: const Color(0xFF0F766E),
-                  iconBg: const Color(0xFFCCFBF1),
                   imageAsset: 'assets/images/services/nursing_services.jpg',
-                  badgeText: 'All List',
+                  icon: Icons.medical_services_rounded,
                   onTap: () => context.push('/nurse-services'),
                 ),
                 // 2. Care Centres (2nd Position as requested)
                 _HomeGridItem(
                   title: 'Care Centres',
-                  icon: Icons.apartment_rounded,
-                  iconColor: const Color(0xFF0284C7),
-                  iconBg: const Color(0xFFE0F2FE),
                   imageAsset: 'assets/images/services/care_centres.jpg',
+                  icon: Icons.apartment_rounded,
                   onTap: () => context.push('/centres'),
                 ),
                 // 3. Equipment’s (3rd Position as requested)
                 _HomeGridItem(
                   title: 'Equipment’s',
-                  icon: Icons.wheelchair_pickup_rounded,
-                  iconColor: const Color(0xFF16A34A),
-                  iconBg: const Color(0xFFDCFCE7),
                   imageAsset: 'assets/images/services/equipment.jpg',
+                  icon: Icons.wheelchair_pickup_rounded,
                   onTap: () => context.push('/equipment'),
                 ),
                 // 4. Physiotherapy
                 _HomeGridItem(
                   title: 'Physiotherapy',
-                  icon: Icons.accessibility_new_rounded,
-                  iconColor: const Color(0xFF4F46E5),
-                  iconBg: const Color(0xFFE0E7FF),
                   imageAsset: 'assets/images/services/physiotherapy.jpg',
+                  icon: Icons.accessibility_new_rounded,
                   onTap: () => context.push('/services/physiotherapy'),
                 ),
                 // 5. Doctor Visit
                 _HomeGridItem(
                   title: 'Doctor Visit',
-                  icon: Icons.medical_information_rounded,
-                  iconColor: const Color(0xFF9333EA),
-                  iconBg: const Color(0xFFF3E8FF),
                   imageAsset: 'assets/images/services/doctor_visit.jpg',
+                  icon: Icons.medical_information_rounded,
                   onTap: () => context.push('/services/doctor-visit'),
                 ),
                 // 6. Elder Care
                 _HomeGridItem(
                   title: 'Elder Care',
                   icon: Icons.elderly_rounded,
-                  iconColor: const Color(0xFFD97706),
-                  iconBg: const Color(0xFFFEF3C7),
-                  onTap: () => context.push('/services/elderly-attendant'),
+                  onTap: () => context.push('/nurses?service=Elder Care'),
                 ),
-                // 7. Baby / Mother
+                // 7. Baby Care
                 _HomeGridItem(
-                  title: 'Baby / Mother',
+                  title: 'Baby Care',
+                  imageAsset: 'assets/images/services/baby_care.jpg',
                   icon: Icons.child_care_rounded,
-                  iconColor: const Color(0xFFDB2777),
-                  iconBg: const Color(0xFFFCE7F3),
                   onTap: () => context.push('/services/maternal-baby'),
                 ),
                 // 8. Physio Services
                 _HomeGridItem(
                   title: 'Physio Services',
-                  icon: Icons.fitness_center_rounded,
-                  iconColor: const Color(0xFF2563EB),
-                  iconBg: const Color(0xFFDBEAFE),
                   imageAsset: 'assets/images/services/physiotherapy.jpg',
+                  icon: Icons.fitness_center_rounded,
                   onTap: () => context.push('/services/physiotherapy'),
                 ),
               ],
@@ -874,22 +843,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 // ---------------------------------------------------------------------------
 class _HomeGridItem extends StatelessWidget {
   final String title;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
+  final IconData? icon;
   final VoidCallback onTap;
   final bool isSeeAll;
-  final String? badgeText;
   final String? imageAsset;
 
   const _HomeGridItem({
     required this.title,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
+    this.icon,
     required this.onTap,
     this.isSeeAll = false,
-    this.badgeText,
     this.imageAsset,
   });
 
@@ -897,86 +860,62 @@ class _HomeGridItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 60,
-                height: 60,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: iconBg,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  boxShadow: [
-                    BoxShadow(
-                      color: iconColor.withValues(alpha: 0.12),
-                      blurRadius: 6,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                  border: Border.all(
-                    color: iconColor.withValues(alpha: isSeeAll ? 0.5 : 0.2),
-                    width: isSeeAll ? 1.5 : 1,
-                  ),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.lg - 1),
-                  child: imageAsset != null
-                      ? Image.asset(
-                          imageAsset!,
-                          fit: BoxFit.cover,
-                          width: 60,
-                          height: 60,
-                          errorBuilder: (_, _, _) => Icon(
-                            icon,
-                            size: isSeeAll ? 26 : 28,
-                            color: iconColor,
-                          ),
-                        )
-                      : Icon(
-                          icon,
-                          size: isSeeAll ? 26 : 28,
-                          color: iconColor,
-                        ),
-                ),
+          Container(
+            width: 72,
+            height: 68,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: isSeeAll ? AppColors.primary.withValues(alpha: 0.35) : const Color(0xFFE5E7EB),
+                width: isSeeAll ? 1.5 : 1,
               ),
-              if (badgeText != null)
-                Positioned(
-                  top: -4,
-                  right: -4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary,
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: Text(
-                      badgeText!,
-                      style: const TextStyle(
-                        fontSize: 7.5,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 5,
+                  offset: const Offset(0, 1.5),
                 ),
-            ],
+              ],
+            ),
+            child: Center(
+              child: imageAsset != null
+                  ? Image.asset(
+                      imageAsset!,
+                      fit: BoxFit.contain,
+                      cacheWidth: 150,
+                      cacheHeight: 150,
+                      filterQuality: FilterQuality.medium,
+                      errorBuilder: (_, _, _) => Icon(
+                        icon ?? Icons.medical_services_rounded,
+                        size: isSeeAll ? 26 : 28,
+                        color: isSeeAll ? AppColors.primary : const Color(0xFF475569),
+                      ),
+                    )
+                  : Icon(
+                      icon ?? Icons.medical_services_rounded,
+                      size: isSeeAll ? 26 : 28,
+                      color: isSeeAll ? AppColors.primary : const Color(0xFF475569),
+                    ),
+            ),
           ),
-          const SizedBox(height: 5),
+          const SizedBox(height: 8),
           Text(
             title,
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 11,
-              fontWeight: isSeeAll ? FontWeight.w900 : FontWeight.w700,
-              height: 1.15,
-              color: isSeeAll ? AppColors.primary : AppColors.ink,
+              fontSize: 11.5,
+              fontWeight: isSeeAll ? FontWeight.w700 : FontWeight.w500,
+              height: 1.18,
+              color: isSeeAll ? AppColors.primary : const Color(0xFF1E293B),
+              letterSpacing: -0.2,
             ),
           ),
         ],
@@ -998,66 +937,44 @@ class _ServiceCubeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.lg),
+      borderRadius: BorderRadius.circular(16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Cube Icon Container
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                width: 62,
-                height: 62,
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: service.iconBgColor,
-                  borderRadius: BorderRadius.circular(AppRadius.lg),
-                  border: Border.all(
-                    color: service.iconColor.withValues(alpha: 0.15),
-                    width: 1,
-                  ),
+          Container(
+            width: 72,
+            height: 68,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 5,
+                  offset: const Offset(0, 1.5),
                 ),
-                child: Icon(
-                  service.icon,
-                  size: 28,
-                  color: service.iconColor,
-                ),
-              ),
-              // Micro Badge for special services (e.g. ⚡ 45m)
-              if (service.group == ServiceGroup.instant)
-                Positioned(
-                  top: -4,
-                  right: -4,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFE11D48),
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                    ),
-                    child: const Text(
-                      '⚡ 45m',
-                      style: TextStyle(
-                        fontSize: 8,
-                        fontWeight: FontWeight.w900,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+              ],
+            ),
+            child: Icon(
+              service.icon,
+              size: 28,
+              color: const Color(0xFF475569),
+            ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 8),
           Text(
             service.shortName,
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              height: 1.15,
-              color: AppColors.ink,
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+              height: 1.18,
+              color: Color(0xFF1E293B),
+              letterSpacing: -0.2,
             ),
           ),
         ],

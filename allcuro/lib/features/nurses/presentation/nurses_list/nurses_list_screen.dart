@@ -20,12 +20,105 @@ const _filters = [
   'Pediatric',
 ];
 
-class NursesListScreen extends ConsumerWidget {
-  const NursesListScreen({super.key});
+class NursesListScreen extends ConsumerStatefulWidget {
+  final String? initialService;
+
+  const NursesListScreen({super.key, this.initialService});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NursesListScreen> createState() => _NursesListScreenState();
+}
+
+class _NursesListScreenState extends ConsumerState<NursesListScreen> {
+  late String _selectedFilter;
+
+  static const _defaultFilters = [
+    'All Nurses',
+    'Elderly Care',
+    'Post-Op Recovery',
+    'ICU / Critical Care',
+    'Palliative',
+    'Pediatric',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedFilter = widget.initialService?.trim().isNotEmpty == true
+        ? widget.initialService!.trim()
+        : 'All Nurses';
+  }
+
+  List<String> get _filters {
+    if (widget.initialService != null &&
+        widget.initialService!.trim().isNotEmpty &&
+        !_defaultFilters.contains(widget.initialService!.trim())) {
+      return [widget.initialService!.trim(), ..._defaultFilters];
+    }
+    return _defaultFilters;
+  }
+
+  List<Nurse> _filterNurses(List<Nurse> nurses) {
+    if (_selectedFilter == 'All Nurses') {
+      return nurses;
+    }
+    final q = _selectedFilter.toLowerCase();
+
+    return nurses.where((n) {
+      final lowerTags = n.tags.map((t) => t.toLowerCase()).toList();
+      final lowerLevel = n.level.toLowerCase();
+      final lowerHighlights = n.highlights.map((h) => h.toLowerCase()).toList();
+
+      if (q.contains('catheter')) {
+        return lowerTags.any((t) => t.contains('catheter'));
+      }
+      if (q.contains('ryles') || q.contains('tube')) {
+        return lowerTags.any((t) => t.contains('ryle') || t.contains('catheter'));
+      }
+      if (q.contains('wound') || q.contains('dressing')) {
+        return lowerTags.any((t) => t.contains('wound'));
+      }
+      if (q.contains('injection')) {
+        return lowerTags.any((t) => t.contains('injection'));
+      }
+      if (q.contains('iv')) {
+        return lowerTags.any((t) => t.contains('iv') || t.contains('cannula'));
+      }
+      if (q.contains('tracheostomy')) {
+        return lowerTags.any((t) => t.contains('tracheostomy') || t.contains('ventilator') || t.contains('icu'));
+      }
+      if (q.contains('vital')) {
+        return lowerTags.any((t) => t.contains('vital') || t.contains('general nursing'));
+      }
+      if (q.contains('elder')) {
+        return lowerTags.any((t) => t.contains('elder'));
+      }
+      if (q.contains('post-op')) {
+        return lowerTags.any((t) => t.contains('post-op') || t.contains('wound'));
+      }
+      if (q.contains('icu') || q.contains('critical')) {
+        return lowerLevel.contains('critical') || lowerTags.any((t) => t.contains('icu') || t.contains('ventilator'));
+      }
+      if (q.contains('palliative')) {
+        return lowerTags.any((t) => t.contains('palliative'));
+      }
+      if (q.contains('pediatric') || q.contains('baby') || q.contains('mother')) {
+        return lowerTags.any((t) => t.contains('baby') || t.contains('pediatric') || t.contains('mother'));
+      }
+      if (q.contains('physio')) {
+        return lowerLevel.contains('bpt') || lowerTags.any((t) => t.contains('physio'));
+      }
+
+      return lowerTags.any((t) => t.contains(q)) ||
+          lowerLevel.contains(q) ||
+          lowerHighlights.any((h) => h.contains(q));
+    }).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final nursesAsync = ref.watch(nursesListViewModelProvider);
+    final isFiltered = _selectedFilter != 'All Nurses';
 
     return AppShell(
       currentPath: '/nurses',
@@ -34,8 +127,10 @@ class NursesListScreen extends ConsumerWidget {
         physics: const BouncingScrollPhysics(),
         children: [
           ScreenHeader(
-            title: 'Nurses & Attendants',
-            subtitle: '100% police-verified & background checked care professionals',
+            title: isFiltered ? '$_selectedFilter Nurses' : 'Nurses & Attendants',
+            subtitle: isFiltered
+                ? 'Certified nurses specialized in $_selectedFilter'
+                : '100% police-verified & background checked care professionals',
             onBack: () {
               if (context.canPop()) {
                 context.pop();
@@ -51,32 +146,146 @@ class NursesListScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               itemCount: _filters.length,
               separatorBuilder: (_, _) => const SizedBox(width: 8),
-              itemBuilder: (context, i) => AllcuroChip(_filters[i]),
+              itemBuilder: (context, i) {
+                final filter = _filters[i];
+                final isSelected = filter == _selectedFilter;
+                return InkWell(
+                  onTap: () => setState(() => _selectedFilter = filter),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: isSelected ? AppColors.primary : AppColors.card,
+                      border: Border.all(
+                        color: isSelected ? AppColors.primary : AppColors.border,
+                      ),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                      boxShadow: isSelected
+                          ? [
+                              BoxShadow(
+                                color: AppColors.primary.withValues(alpha: 0.25),
+                                blurRadius: 6,
+                                offset: const Offset(0, 2),
+                              ),
+                            ]
+                          : null,
+                    ),
+                    child: Text(
+                      filter,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: isSelected ? FontWeight.w800 : FontWeight.w600,
+                        color: isSelected ? Colors.white : AppColors.secondaryForeground,
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           const SizedBox(height: 12),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
-            child: nursesAsync.when(
-              loading: () => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: Center(
-                  child: CircularProgressIndicator(color: AppColors.primary),
-                ),
-              ),
-              error: (error, _) => const Padding(
-                padding: EdgeInsets.symmetric(vertical: 40),
-                child: Center(
-                  child: Text(
-                    'Could not load nurses',
-                    style: TextStyle(color: AppColors.mutedForeground),
-                  ),
-                ),
-              ),
-              data: (nurses) => Column(
-                children: nurses.map((n) => _NurseCard(nurse: n)).toList(),
+          nursesAsync.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
             ),
+            error: (error, _) => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 40),
+              child: Center(
+                child: Text(
+                  'Could not load nurses',
+                  style: TextStyle(color: AppColors.mutedForeground),
+                ),
+              ),
+            ),
+            data: (allNurses) {
+              final nurses = _filterNurses(allNurses);
+
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (isFiltered) ...[
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 14),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF0FDF4),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
+                          border: Border.all(color: const Color(0xFFBBF7D0)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.check_circle_rounded, color: Color(0xFF16A34A), size: 16),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'Showing ${nurses.length} nurse${nurses.length == 1 ? '' : 's'} qualified for $_selectedFilter',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Color(0xFF15803D),
+                                ),
+                              ),
+                            ),
+                            InkWell(
+                              onTap: () => setState(() => _selectedFilter = 'All Nurses'),
+                              child: const Text(
+                                'Show All',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF15803D),
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    if (nurses.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 40),
+                        child: Center(
+                          child: Column(
+                            children: [
+                              const Icon(Icons.person_search_rounded, size: 48, color: AppColors.mutedForeground),
+                              const SizedBox(height: 12),
+                              Text(
+                                'No nurses found for "$_selectedFilter"',
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                              const SizedBox(height: 6),
+                              const Text(
+                                'Try selecting another specialty or view all nurses',
+                                style: TextStyle(fontSize: 12, color: AppColors.mutedForeground),
+                              ),
+                              const SizedBox(height: 16),
+                              OutlinedButton(
+                                onPressed: () => setState(() => _selectedFilter = 'All Nurses'),
+                                child: const Text('View All Nurses'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    else
+                      ...nurses.map((n) => _NurseCard(nurse: n)),
+                  ],
+                ),
+              );
+            },
           ),
         ],
       ),

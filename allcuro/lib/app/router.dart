@@ -63,7 +63,9 @@ final GoRouter appRouter = GoRouter(
     ),
     GoRoute(
       path: '/nurses',
-      builder: (context, state) => const NursesListScreen(),
+      builder: (context, state) => NursesListScreen(
+        initialService: state.uri.queryParameters['service'],
+      ),
     ),
     GoRoute(
       path: '/nurse-quick-booking',
