@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/bookings/data/models/booking.dart';
 import '../../features/bookings/presentation/bookings_view_model.dart';
+import '../../features/location/presentation/location_sheet.dart';
+import '../../features/location/presentation/location_view_model.dart';
 import '../theme/app_theme.dart';
 import 'tappable.dart';
 
@@ -68,8 +70,9 @@ class AppShell extends ConsumerWidget {
   final Widget child;
   final Widget? bottomBar;
   final String currentPath;
-  final String address;
-  final String timeStatus;
+  final String? address;
+  final String? arrivalTime;
+  final String? timeStatus;
   final VoidCallback? onAddressTap;
   final VoidCallback? onNotificationsTap;
   final VoidCallback? onProfileTap;
@@ -85,8 +88,9 @@ class AppShell extends ConsumerWidget {
     required this.child,
     this.bottomBar,
     required this.currentPath,
-    this.address = 'Indiranagar, Bengaluru',
-    this.timeStatus = 'Instant Care Active · 45m',
+    this.address,
+    this.arrivalTime,
+    this.timeStatus,
     this.onAddressTap,
     this.onNotificationsTap,
     this.onProfileTap,
@@ -107,12 +111,24 @@ class AppShell extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final topPadding = MediaQuery.paddingOf(context).top;
 
+    final locationState = ref.watch(locationViewModelProvider);
+    final effectiveAddress =
+        (address != null &&
+            address!.isNotEmpty &&
+            address != 'Indiranagar, Bengaluru')
+        ? address!
+        : locationState.currentAddress.shortAddress;
+    final effectiveArrivalTime =
+        arrivalTime ?? locationState.currentAddress.arrivalTime;
+
     final bookingsAsync = ref.watch(bookingsViewModelProvider);
     Booking? activeNurseBooking;
     final bookings = bookingsAsync.valueOrNull ?? [];
     for (final b in bookings) {
       if (b.type == BookingType.nurse &&
-          (b.status == 'In Progress' || b.status == 'Active' || b.status == 'Confirmed')) {
+          (b.status == 'In Progress' ||
+              b.status == 'Active' ||
+              b.status == 'Confirmed')) {
         activeNurseBooking = b;
         break;
       }
@@ -124,9 +140,7 @@ class AppShell extends ConsumerWidget {
       body: Container(
         width: double.infinity,
         height: double.infinity,
-        decoration: const BoxDecoration(
-          gradient: AppColors.gradientPrimary,
-        ),
+        decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
         child: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [
@@ -135,8 +149,8 @@ class AppShell extends ConsumerWidget {
                 delegate: _CompactHeaderDelegate(
                   topPadding: topPadding,
                   currentPath: currentPath,
-                  address: address,
-                  timeStatus: timeStatus,
+                  address: effectiveAddress,
+                  arrivalTime: effectiveArrivalTime,
                   onAddressTap: onAddressTap,
                   onNotificationsTap: onNotificationsTap,
                   onProfileTap: onProfileTap,
@@ -200,19 +214,28 @@ class AppShell extends ConsumerWidget {
                                     decoration: BoxDecoration(
                                       gradient: active
                                           ? const LinearGradient(
-                                              colors: [Color(0xFF0F766E), Color(0xFF059669)],
+                                              colors: [
+                                                Color(0xFF0F766E),
+                                                Color(0xFF059669),
+                                              ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             )
                                           : const LinearGradient(
-                                              colors: [Color(0xFFCCFBF1), Color(0xFFA7F3D0)],
+                                              colors: [
+                                                Color(0xFFCCFBF1),
+                                                Color(0xFFA7F3D0),
+                                              ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             ),
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF0F766E).withValues(alpha: active ? 0.35 : 0.15),
+                                          color: const Color(0xFF0F766E)
+                                              .withValues(
+                                                alpha: active ? 0.35 : 0.15,
+                                              ),
                                           blurRadius: 6,
                                           offset: const Offset(0, 2),
                                         ),
@@ -221,7 +244,9 @@ class AppShell extends ConsumerWidget {
                                     child: Icon(
                                       tab.icon,
                                       size: 20,
-                                      color: active ? const Color(0xFFFDE047) : const Color(0xFF0F766E),
+                                      color: active
+                                          ? const Color(0xFFFDE047)
+                                          : const Color(0xFF0F766E),
                                     ),
                                   )
                                 else
@@ -250,7 +275,9 @@ class AppShell extends ConsumerWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
                                     fontSize: 10,
-                                    fontWeight: active ? FontWeight.w800 : FontWeight.w600,
+                                    fontWeight: active
+                                        ? FontWeight.w800
+                                        : FontWeight.w600,
                                     color: active
                                         ? AppColors.primary
                                         : AppColors.mutedForeground,
@@ -277,7 +304,7 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double topPadding;
   final String currentPath;
   final String address;
-  final String timeStatus;
+  final String arrivalTime;
   final VoidCallback? onAddressTap;
   final VoidCallback? onNotificationsTap;
   final VoidCallback? onProfileTap;
@@ -288,7 +315,7 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.topPadding,
     required this.currentPath,
     required this.address,
-    required this.timeStatus,
+    required this.arrivalTime,
     this.onAddressTap,
     this.onNotificationsTap,
     this.onProfileTap,
@@ -297,10 +324,10 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
   });
 
   @override
-  double get minExtent => topPadding + 52.0;
+  double get minExtent => topPadding + 56.0;
 
   @override
-  double get maxExtent => topPadding + 62.0;
+  double get maxExtent => topPadding + 64.0;
 
   @override
   Widget build(
@@ -308,58 +335,65 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    final delta = maxExtent - minExtent;
-    final progress = delta > 0 ? (shrinkOffset / delta).clamp(0.0, 1.0) : 0.0;
-    final subOpacity = (1.0 - progress * 2.0).clamp(0.0, 1.0);
-
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: DecoratedBox(
-        decoration: const BoxDecoration(
-          gradient: AppColors.gradientPrimary,
-        ),
+        decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
         child: Padding(
-          padding: EdgeInsets.fromLTRB(18, topPadding + 6, 18, 6),
+          padding: EdgeInsets.fromLTRB(18, topPadding + 4, 18, 6),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // 1. LEFT: Location & Time Status
+              // 1. LEFT: Quick-Commerce Location & Arrival Time Header
               Expanded(
                 child: Tappable(
-                  onTap: onAddressTap ??
-                      () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('📍 Current Area: $address (Serving South Delhi, Bengaluru & Mumbai)'),
-                            backgroundColor: AppColors.primary,
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
+                  onTap: onAddressTap ?? () => LocationSheet.show(context),
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // First Line: "Allcuro in 44 mins"
+                      // "Allcuro in" in small font, "44 mins" in bigger font
+                      Text.rich(
+                        TextSpan(
+                          text: '',
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: 0.1,
+                            color: Colors.white.withValues(alpha: 0.90),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "In $arrivalTime",
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -0.3,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      // Second Line: Address with medium size (slightly larger than "Allcuro" word)
                       Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(
-                            Icons.location_on_rounded,
-                            size: 15,
-                            color: AppColors.primaryForeground,
-                          ),
-                          const SizedBox(width: 4),
                           Flexible(
                             child: Text(
                               address,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontSize: 13.5,
-                                fontWeight: FontWeight.w800,
-                                letterSpacing: -0.2,
-                                color: AppColors.primaryForeground,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: -0.1,
+                                color: Colors.white.withValues(alpha: 0.95),
                               ),
                             ),
                           ),
@@ -367,39 +401,10 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
                           const Icon(
                             Icons.keyboard_arrow_down_rounded,
                             size: 16,
-                            color: AppColors.primaryForeground,
+                            color: Colors.white,
                           ),
                         ],
                       ),
-                      if (subOpacity > 0) ...[
-                        const SizedBox(height: 1),
-                        Opacity(
-                          opacity: subOpacity,
-                          child: Row(
-                            children: [
-                              Container(
-                                width: 5,
-                                height: 5,
-                                decoration: const BoxDecoration(
-                                  color: Color(0xFF4ADE80),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                              const SizedBox(width: 5),
-                              Text(
-                                timeStatus,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: 10.5,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColors.primaryForeground.withValues(alpha: 0.85),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
@@ -411,11 +416,14 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
                 children: [
                   // Notifications Icon
                   Tappable(
-                    onTap: onNotificationsTap ??
+                    onTap:
+                        onNotificationsTap ??
                         () {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
-                              content: Text('🔔 No new clinical alerts. All bookings normal.'),
+                              content: Text(
+                                '🔔 No new clinical alerts. All bookings normal.',
+                              ),
                               backgroundColor: AppColors.primary,
                               behavior: SnackBarBehavior.floating,
                             ),
@@ -430,10 +438,14 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
                           height: 34,
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            color: AppColors.primaryForeground.withValues(alpha: 0.15),
+                            color: AppColors.primaryForeground.withValues(
+                              alpha: 0.15,
+                            ),
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: AppColors.primaryForeground.withValues(alpha: 0.2),
+                              color: AppColors.primaryForeground.withValues(
+                                alpha: 0.2,
+                              ),
                             ),
                           ),
                           child: const Icon(
@@ -478,10 +490,14 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
                       height: 34,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryForeground.withValues(alpha: 0.18),
+                        color: AppColors.primaryForeground.withValues(
+                          alpha: 0.18,
+                        ),
                         shape: BoxShape.circle,
                         border: Border.all(
-                          color: AppColors.primaryForeground.withValues(alpha: 0.25),
+                          color: AppColors.primaryForeground.withValues(
+                            alpha: 0.25,
+                          ),
                         ),
                       ),
                       child: Text(
@@ -506,10 +522,11 @@ class _CompactHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant _CompactHeaderDelegate oldDelegate) {
     return oldDelegate.address != address ||
+        oldDelegate.arrivalTime != arrivalTime ||
         oldDelegate.currentPath != currentPath ||
         oldDelegate.notificationCount != notificationCount ||
         oldDelegate.topPadding != topPadding ||
-        oldDelegate.timeStatus != timeStatus;
+        oldDelegate.initials != initials;
   }
 }
 
@@ -594,7 +611,9 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
                         children: [
                           Flexible(
                             child: Text(
-                              booking.providerName.isNotEmpty ? booking.providerName : 'Sister Priya Sharma',
+                              booking.providerName.isNotEmpty
+                                  ? booking.providerName
+                                  : 'Sister Priya Sharma',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(
@@ -605,7 +624,11 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          const Icon(Icons.verified_rounded, size: 13, color: AppColors.primary),
+                          const Icon(
+                            Icons.verified_rounded,
+                            size: 13,
+                            color: AppColors.primary,
+                          ),
                         ],
                       ),
                       const SizedBox(height: 1),
@@ -643,7 +666,10 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
                 // OTP badge
                 if (booking.otp.isNotEmpty)
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2.5,
+                    ),
                     decoration: BoxDecoration(
                       color: AppColors.secondary,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -663,7 +689,10 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
 
                 // Minimal Track Button
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 5,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColors.primary,
                     borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -680,7 +709,11 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 2),
-                      Icon(Icons.arrow_forward_ios_rounded, size: 8.5, color: Colors.white),
+                      Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 8.5,
+                        color: Colors.white,
+                      ),
                     ],
                   ),
                 ),
@@ -692,4 +725,3 @@ class _MinimalActiveNurseVisitPopup extends StatelessWidget {
     );
   }
 }
-

@@ -4,38 +4,26 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/ui/app_shell.dart';
-import '../../../core/ui/surface.dart';
-import '../../../core/ui/tappable.dart';
 import '../../auth/presentation/auth_view_model.dart';
 import '../../auth/presentation/quick_login_sheet.dart';
 
-class NurseServiceItem {
+class NurseServiceGridItem {
   final String id;
   final String name;
   final String category;
-  final String qualification;
-  final String duration;
-  final String price;
-  final IconData icon;
-  final Color iconColor;
-  final Color iconBg;
-  final String description;
-  final List<String> procedures;
-  final String? badge;
+  final String query;
+  final String? imageAsset;
+  final IconData? icon;
+  final String subtitle;
 
-  const NurseServiceItem({
+  const NurseServiceGridItem({
     required this.id,
     required this.name,
     required this.category,
-    required this.qualification,
-    required this.duration,
-    required this.price,
-    required this.icon,
-    required this.iconColor,
-    required this.iconBg,
-    required this.description,
-    required this.procedures,
-    this.badge,
+    required this.query,
+    this.imageAsset,
+    this.icon,
+    required this.subtitle,
   });
 }
 
@@ -51,253 +39,146 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
   String _searchQuery = '';
   String _selectedCategory = 'All';
 
-  static const List<NurseServiceItem> _services = [
-    NurseServiceItem(
+  static const List<NurseServiceGridItem> _services = [
+    NurseServiceGridItem(
       id: 'catheter-care',
       name: 'Catheter Care',
       category: 'Clinical Care',
-      qualification: 'GNM / B.Sc Nursing',
-      duration: '45–60 mins',
-      price: '₹550',
-      badge: 'High Skill',
+      query: 'Catheter Care',
+      imageAsset: 'assets/images/services/catheter_care.jpg',
       icon: Icons.medical_services_rounded,
-      iconColor: Color(0xFF7C3AED),
-      iconBg: Color(0xFFEDE9FE),
-      description: 'Foley catheterization, sterile bag change, bladder irrigation & leakage assessment.',
-      procedures: [
-        'Foley catheter insertion & removal',
-        'Urine bag replacement & drainage check',
-        'Sterile bladder wash / irrigation',
-        'Catheter site hygiene & blockage inspection',
-      ],
+      subtitle: 'Foley insertion & sterile bag change',
     ),
-    NurseServiceItem(
-      id: 'ryles-tube-care',
-      name: 'Ryles Tube Care',
+    NurseServiceGridItem(
+      id: 'ryles-tube',
+      name: 'Ryles Tube',
       category: 'Clinical Care',
-      qualification: 'GNM / B.Sc Registered',
-      duration: '45–60 mins',
-      price: '₹600',
-      badge: 'Certified Procedure',
+      query: 'Ryles Tube',
+      imageAsset: 'assets/images/services/ryles_tube.jpg',
       icon: Icons.medication_liquid_rounded,
-      iconColor: Color(0xFFEA580C),
-      iconBg: Color(0xFFFFEDD5),
-      description: 'Nasogastric (NG) / Ryles tube insertion, feeding protocol guidance & tube clearance.',
-      procedures: [
-        'Nasogastric (Ryles) tube insertion & positioning test',
-        'Enteral feeding & medicine flush assistance',
-        'Tube clearance & blockage release',
-        'Aspiration check & oral hygiene guidance',
-      ],
+      subtitle: 'NG tube insertion & feeding support',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'wound-dressing',
       name: 'Wound Dressing',
       category: 'Clinical Care',
-      qualification: 'GNM / B.Sc Nursing',
-      duration: '30–45 mins',
-      price: '₹499',
-      badge: 'Aseptic Sterile Kit',
+      query: 'Wound Dressing',
+      imageAsset: 'assets/images/services/wound_dressing.jpg',
       icon: Icons.healing_rounded,
-      iconColor: Color(0xFF0D9488),
-      iconBg: Color(0xFFCCFBF1),
-      description: 'Sterile dressing for post-operative incisions, bedsores (stages 1–4), and diabetic foot ulcers.',
-      procedures: [
-        'Aseptic cleaning & sterile bandage application',
-        'Post-operative surgical incision dressing',
-        'Diabetic foot ulcer treatment & debridement care',
-        'Pressure ulcer (bedsore) staging & dressing',
-      ],
+      subtitle: 'Surgical & ulcer sterile dressings',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'injection',
-      name: 'Injection Administration',
+      name: 'Injection',
       category: 'Clinical Care',
-      qualification: 'ANM / GNM Nursing',
-      duration: '20–30 mins',
-      price: '₹349',
-      badge: 'Doctor Rx Required',
+      query: 'Injection',
+      imageAsset: 'assets/images/services/injection.jpg',
       icon: Icons.vaccines_rounded,
-      iconColor: Color(0xFF2563EB),
-      iconBg: Color(0xFFDBEAFE),
-      description: 'Intramuscular (IM), Subcutaneous (SC), and prescribed insulin injection administration.',
-      procedures: [
-        'Intramuscular (IM) injection administration',
-        'Subcutaneous (SC) injections & insulin dose setup',
-        'Injection site rotation & aseptic swab',
-        'Pre & post vital checkup (Pulse & BP)',
-      ],
+      subtitle: 'IM, SC & prescribed insulin doses',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'iv-care',
-      name: 'IV Care & Cannulation',
+      name: 'IV Care',
       category: 'Clinical Care',
-      qualification: 'GNM / B.Sc Registered',
-      duration: '45–90 mins',
-      price: '₹599',
-      badge: 'Instant 45m Support',
+      query: 'IV Care',
+      imageAsset: 'assets/images/services/iv_care.jpg',
       icon: Icons.water_drop_rounded,
-      iconColor: Color(0xFF0284C7),
-      iconBg: Color(0xFFE0F2FE),
-      description: 'IV cannula insertion, saline / antibiotic IV drip administration, and central line flushes.',
-      procedures: [
-        'IV cannula insertion & vein selection',
-        'Normal saline / Dextrose / Antibiotic infusion',
-        'Flow rate calibration & infiltration monitoring',
-        'PICC line / Central venous line heparin flush',
-      ],
+      subtitle: 'Cannula insertion & saline drip infusion',
     ),
-    NurseServiceItem(
-      id: 'tracheostomy-care',
-      name: 'Tracheostomy Care',
+    NurseServiceGridItem(
+      id: 'tracheostomy',
+      name: 'Tracheostomy',
       category: 'Critical & Post-Op',
-      qualification: 'Critical Care Certified Nurse',
-      duration: '60 mins',
-      price: '₹750',
-      badge: 'Specialized ICU',
+      query: 'Tracheostomy',
+      imageAsset: 'assets/images/services/tracheostomy.jpg',
       icon: Icons.masks_rounded,
-      iconColor: Color(0xFFDC2626),
-      iconBg: Color(0xFFFEE2E2),
-      description: 'Inner cannula cleansing, stoma dressing, cuff pressure monitoring, and airway clearance.',
-      procedures: [
-        'Inner cannula removal, sterilization & reinsertion',
-        'Stoma site antiseptic cleaning & tie replacement',
-        'Tracheal cuff pressure monitoring',
-        'Emergency airway patency verification',
-      ],
+      subtitle: 'Inner cannula cleansing & suctioning',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'suction',
       name: 'Suction Care',
       category: 'Critical & Post-Op',
-      qualification: 'GNM / Critical Care',
-      duration: '30–45 mins',
-      price: '₹450',
-      badge: 'Airway Hygiene',
+      query: 'Suction',
       icon: Icons.air_rounded,
-      iconColor: Color(0xFF0891B2),
-      iconBg: Color(0xFFCFFAFE),
-      description: 'Oral, nasal, and endotracheal suctioning for secretion clearance and respiratory comfort.',
-      procedures: [
-        'Oral & pharyngeal suctioning',
-        'Endotracheal / Tracheostomy deep suctioning',
-        'Catheter lubrication & aseptic technique',
-        'Pre & post oxygen saturation (SpO2) monitoring',
-      ],
+      subtitle: 'Oral, nasal & endotracheal clearance',
     ),
-    NurseServiceItem(
-      id: 'post-operative-care',
-      name: 'Post-operative Care',
+    NurseServiceGridItem(
+      id: 'post-op',
+      name: 'Post-Op Care',
       category: 'Critical & Post-Op',
-      qualification: 'GNM / B.Sc Nursing',
-      duration: '60–120 mins',
-      price: '₹699',
-      badge: 'Hospital Discharge',
+      query: 'Post-Op',
+      imageAsset: 'assets/images/services/wound_dressing.jpg',
       icon: Icons.health_and_safety_rounded,
-      iconColor: Color(0xFF059669),
-      iconBg: Color(0xFFD1FAE5),
-      description: 'Complete post-surgery recovery monitoring, drain measurement, surgical suture removal & pain assessment.',
-      procedures: [
-        'Suture / surgical staple removal',
-        'Surgical drain volume & character measurement',
-        'Infection surveillance (redness, exudate, fever)',
-        'Post-operative ambulation & respiratory therapy',
-      ],
+      subtitle: 'Suture removal & post-surgery recovery',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'vital-monitoring',
-      name: 'Vital Monitoring & Check',
+      name: 'Vital Monitoring',
       category: 'General & Support',
-      qualification: 'ANM / GNM Nursing',
-      duration: '30 mins',
-      price: '₹399',
-      badge: 'Clinical Grade',
+      query: 'Vital Monitoring',
+      imageAsset: 'assets/images/services/vital_monitoring.jpg',
       icon: Icons.monitor_heart_rounded,
-      iconColor: Color(0xFFE11D48),
-      iconBg: Color(0xFFFFE4E6),
-      description: 'Accurate clinical vitals assessment: Blood Pressure, Pulse, SpO2, Temp & Blood Glucose.',
-      procedures: [
-        'Dual-arm Blood Pressure recording',
-        'Continuous pulse oximetry (SpO2) & heart rate',
-        'Random / Fasting blood glucose testing',
-        'Digital clinical observation log sharing',
-      ],
+      subtitle: 'BP, Sugar, SpO2 & vitals assessment',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'mother-and-baby',
-      name: 'Mother & Baby Care',
+      name: 'Mother & Baby',
       category: 'Maternal & Newborn',
-      qualification: 'Certified Midwife / GNM',
-      duration: '60–90 mins',
-      price: '₹750',
-      badge: 'Certified Midwife',
+      query: 'Mother & Baby',
+      imageAsset: 'assets/images/services/baby_care.jpg',
       icon: Icons.child_care_rounded,
-      iconColor: Color(0xFFDB2777),
-      iconBg: Color(0xFFFCE7F3),
-      description: 'Postnatal mother vitals, C-section incision monitoring, newborn bath, cord care & lactation support.',
-      procedures: [
-        'Post-caesarean wound dressing & vitals check',
-        'Newborn sterile bath & umbilical cord care',
-        'Baby jaundice inspection & weight tracking',
-        'Latching, burping & lactation guidance',
-      ],
+      subtitle: 'Newborn bath, lactation & mother care',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'general-nursing',
       name: 'General Nursing',
       category: 'General & Support',
-      qualification: 'ANM / GNM Diploma',
-      duration: '60 mins',
-      price: '₹499',
-      badge: 'Routine Care',
+      query: 'General Nursing',
+      imageAsset: 'assets/images/services/nursing_services.jpg',
       icon: Icons.medical_information_rounded,
-      iconColor: Color(0xFF10B981),
-      iconBg: Color(0xFFD1FAE5),
-      description: 'Routine bedside nursing assistance, medication reminders, hygiene support, and health logging.',
-      procedures: [
-        'Daily medication reconciliation & dosage timing',
-        'Bed bath & pressure sore prevention positioning',
-        'General health status review & vitals assessment',
-        'Doctor report coordination & family updates',
-      ],
+      subtitle: 'Routine bedside care & medication timing',
     ),
-    NurseServiceItem(
+    NurseServiceGridItem(
       id: 'physiotherapy',
-      name: 'Physiotherapy & Rehab',
+      name: 'Physiotherapy',
       category: 'Rehabilitation',
-      qualification: 'BPT Physiotherapist',
-      duration: '45–60 mins',
-      price: '₹850',
-      badge: 'BPT Qualified',
+      query: 'Physiotherapy',
+      imageAsset: 'assets/images/services/physiotherapy.jpg',
       icon: Icons.accessibility_new_rounded,
-      iconColor: Color(0xFF4F46E5),
-      iconBg: Color(0xFFE0E7FF),
-      description: 'Post-op knee/hip rehab, post-stroke neuromuscular therapy, elderly mobility & chest physiotherapy.',
-      procedures: [
-        'Post-joint replacement range-of-motion therapy',
-        'Stroke paralysis neuromuscular re-education',
-        'Geriatric gait, balance & fall-prevention training',
-        'Pain relief electrotherapy & manual mobilization',
-      ],
+      subtitle: 'Neuro, orthopedic & mobility therapy',
     ),
-    NurseServiceItem(
-      id: 'nebulization-respiratory',
-      name: 'Nebulization & Oxygen Support',
+    NurseServiceGridItem(
+      id: 'elderly-care',
+      name: 'Elderly Care',
+      category: 'General & Support',
+      query: 'Elderly Care',
+      imageAsset: 'assets/images/services/care_centres.jpg',
+      icon: Icons.elderly_rounded,
+      subtitle: 'Assisted hygiene, mobility & companionship',
+    ),
+    NurseServiceGridItem(
+      id: 'nebulization',
+      name: 'Nebulization',
       category: 'Clinical Care',
-      qualification: 'ANM / GNM Registered',
-      duration: '30 mins',
-      price: '₹399',
-      badge: 'Respiratory Comfort',
+      query: 'Nebulization',
       icon: Icons.air_outlined,
-      iconColor: Color(0xFF0284C7),
-      iconBg: Color(0xFFE0F2FE),
-      description: 'Prescribed nebulizer medicine administration, oxygen flow titration, and chest vibration.',
-      procedures: [
-        'Prescribed bronchodilator nebulization',
-        'Oxygen concentrator flow & cannula calibration',
-        'SpO2 pre & post treatment recording',
-        'Breathing exercises & postural drainage',
-      ],
+      subtitle: 'Bronchodilator aerosol & oxygen titration',
+    ),
+    NurseServiceGridItem(
+      id: 'icu-critical',
+      name: 'ICU Critical Care',
+      category: 'Critical & Post-Op',
+      query: 'ICU / Critical Care',
+      icon: Icons.local_hospital_rounded,
+      subtitle: 'Ventilator management & stepdown care',
+    ),
+    NurseServiceGridItem(
+      id: 'palliative',
+      name: 'Palliative Care',
+      category: 'General & Support',
+      query: 'Palliative',
+      icon: Icons.favorite_rounded,
+      subtitle: 'Pain relief & compassionate comfort care',
     ),
   ];
 
@@ -325,14 +206,22 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
 
   @override
   Widget build(BuildContext context) {
-    final categories = ['All', 'Clinical Care', 'Critical & Post-Op', 'Maternal & Newborn', 'Rehabilitation', 'General & Support'];
+    final categories = [
+      'All',
+      'Clinical Care',
+      'Critical & Post-Op',
+      'General & Support',
+      'Maternal & Newborn',
+      'Rehabilitation',
+    ];
 
     final filtered = _services.where((item) {
       final matchesCat = _selectedCategory == 'All' || item.category == _selectedCategory;
       final matchesQuery = _searchQuery.isEmpty ||
           item.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          item.procedures.any((p) => p.toLowerCase().contains(_searchQuery.toLowerCase()));
+          item.query.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          item.subtitle.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+          item.category.toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesCat && matchesQuery;
     }).toList();
 
@@ -340,7 +229,7 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
       currentPath: '/nurse-services',
       child: ListView(
         padding: EdgeInsets.zero,
-        physics: const BouncingScrollPhysics(),
+        physics: const AlwaysScrollableScrollPhysics(),
         children: [
           // Header
           Padding(
@@ -372,7 +261,7 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
                         ),
                       ),
                       Text(
-                        'Clinical procedures performed by certified nurses',
+                        'Select a service to view specialized verified nurses',
                         style: TextStyle(fontSize: 11.5, color: AppColors.mutedForeground),
                       ),
                     ],
@@ -402,8 +291,9 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
               child: TextField(
                 controller: _searchController,
                 onChanged: (val) => setState(() => _searchQuery = val.trim()),
+                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
                 decoration: InputDecoration(
-                  hintText: 'Search catheter, ryles tube, wound dressing, IV...',
+                  hintText: 'Search catheter, ryles tube, wound, IV...',
                   hintStyle: const TextStyle(fontSize: 12.5, color: AppColors.mutedForeground),
                   prefixIcon: const Icon(Icons.search_rounded, color: AppColors.mutedForeground, size: 20),
                   suffixIcon: _searchQuery.isNotEmpty
@@ -455,9 +345,9 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
             ),
           ),
 
-          const SizedBox(height: 14),
+          const SizedBox(height: 16),
 
-          // Service Items List
+          // Service Items Grid (Identical layout & styling to Home screen)
           if (filtered.isEmpty)
             Padding(
               padding: const EdgeInsets.all(40),
@@ -482,179 +372,193 @@ class _AllNurseServicesScreenState extends ConsumerState<AllNurseServicesScreen>
             )
           else
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: filtered.map((item) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: Surface(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: 46,
-                                height: 46,
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: item.iconBg,
-                                  borderRadius: BorderRadius.circular(AppRadius.md),
-                                  border: Border.all(color: item.iconColor.withValues(alpha: 0.2)),
-                                ),
-                                child: Icon(item.icon, color: item.iconColor, size: 24),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            item.name,
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              fontWeight: FontWeight.w800,
-                                              color: AppColors.ink,
-                                            ),
-                                          ),
-                                        ),
-                                        if (item.badge != null)
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: AppColors.primarySoft,
-                                              borderRadius: BorderRadius.circular(AppRadius.pill),
-                                            ),
-                                            child: Text(
-                                              item.badge!,
-                                              style: const TextStyle(
-                                                fontSize: 9.5,
-                                                fontWeight: FontWeight.w800,
-                                                color: AppColors.primary,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      '${item.qualification} · ${item.duration}',
-                                      style: const TextStyle(
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.w600,
-                                        color: AppColors.mutedForeground,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Text(
-                            item.description,
-                            style: const TextStyle(
-                              fontSize: 12,
-                              height: 1.35,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                          const SizedBox(height: 10),
-                          Wrap(
-                            spacing: 6,
-                            runSpacing: 4,
-                            children: item.procedures.take(3).map((p) {
-                              return Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                decoration: BoxDecoration(
-                                  color: AppColors.secondary,
-                                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                                  border: Border.all(color: AppColors.border),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    const Icon(Icons.check_circle_rounded, size: 11, color: AppColors.primary),
-                                    const SizedBox(width: 4),
-                                    Text(
-                                      p,
-                                      style: const TextStyle(fontSize: 10.5, color: AppColors.ink, fontWeight: FontWeight.w600),
-                                    ),
-                                  ],
-                                ),
-                              );
-                            }).toList(),
-                          ),
-                          const SizedBox(height: 14),
-                          const Divider(height: 1, color: AppColors.border),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Starts from',
-                                    style: TextStyle(fontSize: 10, color: AppColors.mutedForeground),
-                                  ),
-                                  Text(
-                                    item.price,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w900,
-                                      color: AppColors.primary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  OutlinedButton(
-                                    onPressed: () {
-                                      _handleBookingGuard(() => context.push('/nurse-quick-booking'));
-                                    },
-                                    style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(color: AppColors.primary),
-                                      foregroundColor: AppColors.primary,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
-                                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                                      visualDensity: VisualDensity.compact,
-                                    ),
-                                    child: const Text('⚡ 45m Express', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700)),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      _handleBookingGuard(() => context.push('/nurses'));
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                      elevation: 0,
-                                      visualDensity: VisualDensity.compact,
-                                    ),
-                                    child: const Text('Book Nurse', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 4,
+                  childAspectRatio: 0.70,
+                  crossAxisSpacing: 8,
+                  mainAxisSpacing: 14,
+                ),
+                itemCount: filtered.length,
+                itemBuilder: (context, index) {
+                  final item = filtered[index];
+                  return _ServiceGridTile(
+                    title: item.name,
+                    imageAsset: item.imageAsset,
+                    icon: item.icon,
+                    onTap: () {
+                      context.push('/nurses?service=${Uri.encodeComponent(item.query)}');
+                    },
                   );
-                }).toList(),
+                },
               ),
             ),
+
+          const SizedBox(height: 24),
+
+          // Urgent Nurse Assistance Banner
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.08),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.2),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.flash_on_rounded, color: Color(0xFFF59E0B), size: 24),
+                  ),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Need nurse in 30–45 mins?',
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                          ),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          'Instant dispatch of nearby verified nurses',
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: Color(0xFF94A3B8),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _handleBookingGuard(() => context.push('/nurse-quick-booking'));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                      elevation: 0,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    child: const Text('Book Express', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
           const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SERVICE GRID TILE (Matches Home Screen Grid Item Aesthetic Exactly)
+// ---------------------------------------------------------------------------
+class _ServiceGridTile extends StatelessWidget {
+  final String title;
+  final IconData? icon;
+  final VoidCallback onTap;
+  final String? imageAsset;
+
+  const _ServiceGridTile({
+    required this.title,
+    this.icon,
+    required this.onTap,
+    this.imageAsset,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 72,
+            height: 68,
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: const Color(0xFFE5E7EB),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.03),
+                  blurRadius: 5,
+                  offset: const Offset(0, 1.5),
+                ),
+              ],
+            ),
+            child: Center(
+              child: imageAsset != null
+                  ? Image.asset(
+                      imageAsset!,
+                      fit: BoxFit.contain,
+                      cacheWidth: 150,
+                      cacheHeight: 150,
+                      filterQuality: FilterQuality.medium,
+                      errorBuilder: (_, _, _) => Icon(
+                        icon ?? Icons.medical_services_rounded,
+                        size: 28,
+                        color: const Color(0xFF475569),
+                      ),
+                    )
+                  : Icon(
+                      icon ?? Icons.medical_services_rounded,
+                      size: 28,
+                      color: const Color(0xFF475569),
+                    ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+              fontSize: 11.5,
+              fontWeight: FontWeight.w500,
+              height: 1.18,
+              color: Color(0xFF1E293B),
+              letterSpacing: -0.2,
+            ),
+          ),
         ],
       ),
     );

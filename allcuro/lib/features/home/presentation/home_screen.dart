@@ -71,7 +71,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return AppShell(
       currentPath: '/',
       initials: initials,
-      timeStatus: 'Instant Care Active · 45m',
       onProfileTap: () {
         if (isGuest) {
           QuickLoginSheet.show(

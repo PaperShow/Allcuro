@@ -8,6 +8,8 @@ import '../../../../core/ui/app_shell.dart';
 import '../../../../core/ui/surface.dart';
 import '../../../../core/ui/tappable.dart';
 import '../../../../core/utils/currency.dart';
+import '../../../auth/presentation/auth_view_model.dart';
+import '../../../auth/presentation/quick_login_sheet.dart';
 import '../../data/models/nurse.dart';
 import 'nurse_detail_view_model.dart';
 
@@ -75,14 +77,33 @@ class _NotFound extends StatelessWidget {
   }
 }
 
-class _NurseDetail extends StatelessWidget {
+class _NurseDetail extends ConsumerWidget {
   final Nurse nurse;
   final String path;
 
   const _NurseDetail({required this.nurse, required this.path});
 
+  void _handleBookingGuard(BuildContext context, WidgetRef ref) {
+    final authState = ref.read(authViewModelProvider);
+    final isAuthenticated =
+        authState.status == AuthStatus.onboarded || authState.status == AuthStatus.authenticated;
+
+    void proceed() => context.push('/nurse-quick-booking');
+
+    if (isAuthenticated) {
+      proceed();
+    } else {
+      QuickLoginSheet.show(
+        context,
+        title: 'Quick Login to Book',
+        subtitle: 'Enter your phone number to book ${nurse.name}',
+        onSuccess: proceed,
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppShell(
       currentPath: path,
       bottomBar: Container(
@@ -129,7 +150,7 @@ class _NurseDetail extends StatelessWidget {
               ),
             ),
             ElevatedButton(
-              onPressed: () => context.push('/nurse-quick-booking'),
+              onPressed: () => _handleBookingGuard(context, ref),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.primaryForeground,

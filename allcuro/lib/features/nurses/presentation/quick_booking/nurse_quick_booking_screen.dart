@@ -9,6 +9,8 @@ import '../../../../core/ui/surface.dart';
 import '../../../../core/utils/currency.dart';
 import '../../../bookings/data/models/booking.dart';
 import '../../../bookings/presentation/bookings_view_model.dart';
+import '../../../auth/presentation/auth_view_model.dart';
+import '../../../auth/presentation/quick_login_sheet.dart';
 
 class QuickServiceOption {
   final String title;
@@ -97,6 +99,20 @@ class _NurseQuickBookingScreenState
   }
 
   void _submitBooking() async {
+    final authState = ref.read(authViewModelProvider);
+    final isAuthenticated =
+        authState.status == AuthStatus.onboarded || authState.status == AuthStatus.authenticated;
+
+    if (!isAuthenticated) {
+      QuickLoginSheet.show(
+        context,
+        title: 'Quick Login to Confirm',
+        subtitle: 'Enter your phone number to complete and track your booking',
+        onSuccess: _submitBooking,
+      );
+      return;
+    }
+
     setState(() => _isBooking = true);
     final selectedService = _quickServices[_selectedServiceIdx];
     final selectedTiming = _timeSlots[_selectedSlotIdx];

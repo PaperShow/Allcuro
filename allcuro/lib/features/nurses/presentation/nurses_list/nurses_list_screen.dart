@@ -8,6 +8,8 @@ import '../../../../core/ui/app_shell.dart';
 import '../../../../core/ui/screen_header.dart';
 import '../../../../core/ui/surface.dart';
 import '../../../../core/utils/currency.dart';
+import '../../../auth/presentation/auth_view_model.dart';
+import '../../../auth/presentation/quick_login_sheet.dart';
 import '../../data/models/nurse.dart';
 import 'nurses_list_view_model.dart';
 
@@ -87,6 +89,9 @@ class _NursesListScreenState extends ConsumerState<NursesListScreen> {
       if (q.contains('tracheostomy')) {
         return lowerTags.any((t) => t.contains('tracheostomy') || t.contains('ventilator') || t.contains('icu'));
       }
+      if (q.contains('suction')) {
+        return lowerTags.any((t) => t.contains('suction') || t.contains('tracheostomy') || t.contains('ventilator') || t.contains('icu'));
+      }
       if (q.contains('vital')) {
         return lowerTags.any((t) => t.contains('vital') || t.contains('general nursing'));
       }
@@ -107,6 +112,12 @@ class _NursesListScreenState extends ConsumerState<NursesListScreen> {
       }
       if (q.contains('physio')) {
         return lowerLevel.contains('bpt') || lowerTags.any((t) => t.contains('physio'));
+      }
+      if (q.contains('general')) {
+        return lowerTags.any((t) => t.contains('general') || t.contains('vitals') || t.contains('elderly'));
+      }
+      if (q.contains('nebulization') || q.contains('oxygen')) {
+        return lowerTags.any((t) => t.contains('ventilator') || t.contains('general') || t.contains('vitals'));
       }
 
       return lowerTags.any((t) => t.contains(q)) ||
@@ -293,13 +304,32 @@ class _NursesListScreenState extends ConsumerState<NursesListScreen> {
   }
 }
 
-class _NurseCard extends StatelessWidget {
+class _NurseCard extends ConsumerWidget {
   final Nurse nurse;
 
   const _NurseCard({required this.nurse});
 
+  void _handleBooking(BuildContext context, WidgetRef ref) {
+    final authState = ref.read(authViewModelProvider);
+    final isAuthenticated =
+        authState.status == AuthStatus.onboarded || authState.status == AuthStatus.authenticated;
+
+    void proceed() => context.push('/nurse-quick-booking');
+
+    if (isAuthenticated) {
+      proceed();
+    } else {
+      QuickLoginSheet.show(
+        context,
+        title: 'Quick Login to Book',
+        subtitle: 'Enter your phone number to book ${nurse.name}',
+        onSuccess: proceed,
+      );
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final n = nurse;
     return Padding(
       padding: const EdgeInsets.only(bottom: 14),
@@ -429,25 +459,42 @@ class _NurseCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                Text.rich(
-                  TextSpan(
-                    text: inr(n.shifts.first.price),
-                    style: const TextStyle(
-                      fontSize: 14.5,
-                      fontWeight: FontWeight.w900,
-                      color: AppColors.ink,
-                    ),
-                    children: const [
+                Row(
+                  children: [
+                    Text.rich(
                       TextSpan(
-                        text: ' / shift',
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.mutedForeground,
+                        text: inr(n.shifts.first.price),
+                        style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w900,
+                          color: AppColors.ink,
                         ),
+                        children: const [
+                          TextSpan(
+                            text: ' / shift',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w500,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
+                      onPressed: () => _handleBooking(context, ref),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.pill)),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        elevation: 0,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      child: const Text('Book', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
+                    ),
+                  ],
                 ),
               ],
             ),
