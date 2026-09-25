@@ -221,7 +221,13 @@ class _NurseQuickBookingScreenState
           ScreenHeader(
             title: 'Quick Nurse Booking',
             subtitle: 'Verified home nursing delivered in 30-45 mins',
-            onBack: () => context.pop(),
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),

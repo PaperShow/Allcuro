@@ -192,7 +192,13 @@ class _CentreBookingScreenState extends ConsumerState<CentreBookingScreen> {
           ScreenHeader(
             title: 'Care Centre Admission',
             subtitle: 'Sanjeevani Elder Care Home · Indiranagar',
-            onBack: () => context.pop(),
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/centres');
+              }
+            },
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),

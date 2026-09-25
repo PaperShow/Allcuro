@@ -37,7 +37,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/auth/phone',
       builder: (context, state) => PhoneAuthScreen(
-        onBack: () => context.pop(),
+        onBack: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/welcome');
+          }
+        },
         onAuthenticated: () => context.go('/onboarding'),
       ),
     ),

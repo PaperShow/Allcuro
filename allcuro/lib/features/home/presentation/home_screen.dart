@@ -180,265 +180,287 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             const SizedBox(height: 16),
           ] else ...[
             // -----------------------------------------------------------------
-            // 2. OUR NURSE CARE (8 Grid Items: 7 Clinical + 8th See All)
+            // 2. HEALTHCARE SERVICES (Nursing, Mother/Baby, Elder, Physio, Doctor, Centres, Equipments, See All)
             // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
-            child: const Text(
-              'Our Nurse Care',
-              style: TextStyle(
-                fontSize: 16.5,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.3,
-                color: AppColors.ink,
-              ),
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              crossAxisCount: 4,
-              childAspectRatio: 0.70,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 10,
-              children: [
-                _HomeGridItem(
-                  title: 'Catheter Care',
-                  imageAsset: 'assets/images/services/catheter_care.jpg',
-                  icon: Icons.medical_services_rounded,
-                  onTap: () => context.push('/nurses?service=Catheter Care'),
-                ),
-                _HomeGridItem(
-                  title: 'Ryles Tube',
-                  imageAsset: 'assets/images/services/ryles_tube.jpg',
-                  icon: Icons.medication_liquid_rounded,
-                  onTap: () => context.push('/nurses?service=Ryles Tube'),
-                ),
-                _HomeGridItem(
-                  title: 'Wound Dressing',
-                  imageAsset: 'assets/images/services/wound_dressing.jpg',
-                  icon: Icons.healing_rounded,
-                  onTap: () => context.push('/nurses?service=Wound Dressing'),
-                ),
-                _HomeGridItem(
-                  title: 'Injection',
-                  imageAsset: 'assets/images/services/injection.jpg',
-                  icon: Icons.vaccines_rounded,
-                  onTap: () => context.push('/nurses?service=Injection'),
-                ),
-                _HomeGridItem(
-                  title: 'IV Care',
-                  imageAsset: 'assets/images/services/iv_care.jpg',
-                  icon: Icons.water_drop_rounded,
-                  onTap: () => context.push('/nurses?service=IV Care'),
-                ),
-                _HomeGridItem(
-                  title: 'Tracheostomy',
-                  imageAsset: 'assets/images/services/tracheostomy.jpg',
-                  icon: Icons.masks_rounded,
-                  onTap: () => context.push('/nurses?service=Tracheostomy'),
-                ),
-                _HomeGridItem(
-                  title: 'Vital Monitoring',
-                  imageAsset: 'assets/images/services/vital_monitoring.jpg',
-                  icon: Icons.monitor_heart_rounded,
-                  onTap: () => context.push('/nurses?service=Vital Monitoring'),
-                ),
-                _HomeGridItem(
-                  title: 'See All',
-                  icon: Icons.grid_view_rounded,
-                  isSeeAll: true,
-                  onTap: () => context.push('/nurse-services'),
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 18),
-
-          // -----------------------------------------------------------------
-          // 3. QUICK 45-MIN CARE PROMO BANNER
-          // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: InkWell(
-              onTap: () {
-                _handleBookingGuard(() => context.push('/nurse-quick-booking'));
-              },
-              borderRadius: BorderRadius.circular(AppRadius.xl),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF0F766E), Color(0xFF134E4A)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(AppRadius.xl),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF0F766E).withValues(alpha: 0.25),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 48,
-                      height: 48,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(AppRadius.lg),
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-                      ),
-                      child: const Icon(Icons.bolt_rounded, size: 28, color: Color(0xFFFDE047)),
-                    ),
-                    const SizedBox(width: 14),
-                    const Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                'Need a Nurse in 45 Mins?',
-                                style: TextStyle(
-                                  fontSize: 14.5,
-                                  fontWeight: FontWeight.w800,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              SizedBox(width: 6),
-                              Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
-                            ],
-                          ),
-                          SizedBox(height: 2),
-                          Text(
-                            'Emergency injections, dressing & vitals check at your doorstep',
-                            style: TextStyle(
-                              fontSize: 11,
-                              color: Color(0xFFCCFBF1),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          const SizedBox(height: 22),
-
-          // -----------------------------------------------------------------
-          // 4. HEALTHCARE SERVICES (Nursing Services, Care Centres, Equipments, Physio, Doctor, Elder, Baby/Mother, Physio Rehab)
-          // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Text(
-                  'HealthCare Services',
-                  style: TextStyle(
-                    fontSize: 16.5,
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: -0.3,
-                    color: AppColors.ink,
-                  ),
-                ),
-                InkWell(
-                  onTap: () => context.push('/nurse-services'),
-                  child: const Text(
-                    'View all ➔',
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 6, 20, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'HealthCare Services',
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: 16.5,
                       fontWeight: FontWeight.w800,
-                      color: AppColors.primary,
+                      letterSpacing: -0.3,
+                      color: AppColors.ink,
                     ),
                   ),
-                ),
-              ],
+                  InkWell(
+                    onTap: () => context.push('/nurse-services'),
+                    child: const Text(
+                      'View all ➔',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GridView.count(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: EdgeInsets.zero,
-              crossAxisCount: 4,
-              childAspectRatio: 0.70,
-              crossAxisSpacing: 8,
-              mainAxisSpacing: 10,
-              children: [
-                // 1. Nursing Services
-                _HomeGridItem(
-                  title: 'Nursing Services',
-                  imageAsset: 'assets/images/services/nursing_services.jpg',
-                  icon: Icons.medical_services_rounded,
-                  onTap: () => context.push('/nurse-services'),
-                ),
-                // 2. Care Centres (2nd Position as requested)
-                _HomeGridItem(
-                  title: 'Care Centres',
-                  imageAsset: 'assets/images/services/care_centres.jpg',
-                  icon: Icons.apartment_rounded,
-                  onTap: () => context.push('/centres'),
-                ),
-                // 3. Equipment’s (3rd Position as requested)
-                _HomeGridItem(
-                  title: 'Equipment’s',
-                  imageAsset: 'assets/images/services/equipment.jpg',
-                  icon: Icons.wheelchair_pickup_rounded,
-                  onTap: () => context.push('/equipment'),
-                ),
-                // 4. Physiotherapy
-                _HomeGridItem(
-                  title: 'Physiotherapy',
-                  imageAsset: 'assets/images/services/physiotherapy.jpg',
-                  icon: Icons.accessibility_new_rounded,
-                  onTap: () => context.push('/services/physiotherapy'),
-                ),
-                // 5. Doctor Visit
-                _HomeGridItem(
-                  title: 'Doctor Visit',
-                  imageAsset: 'assets/images/services/doctor_visit.jpg',
-                  icon: Icons.medical_information_rounded,
-                  onTap: () => context.push('/services/doctor-visit'),
-                ),
-                // 6. Elder Care
-                _HomeGridItem(
-                  title: 'Elder Care',
-                  icon: Icons.elderly_rounded,
-                  onTap: () => context.push('/nurses?service=Elder Care'),
-                ),
-                // 7. Baby Care
-                _HomeGridItem(
-                  title: 'Baby Care',
-                  imageAsset: 'assets/images/services/baby_care.jpg',
-                  icon: Icons.child_care_rounded,
-                  onTap: () => context.push('/services/maternal-baby'),
-                ),
-                // 8. Physio Services
-                _HomeGridItem(
-                  title: 'Physio Services',
-                  imageAsset: 'assets/images/services/physiotherapy.jpg',
-                  icon: Icons.fitness_center_rounded,
-                  onTap: () => context.push('/services/physiotherapy'),
-                ),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                crossAxisCount: 4,
+                childAspectRatio: 0.70,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 10,
+                children: [
+                  // 1. Nursing Services
+                  _HomeGridItem(
+                    title: 'Nursing Services',
+                    imageAsset: 'assets/images/services/nursing_services.jpg',
+                    icon: Icons.medical_services_rounded,
+                    onTap: () => context.push('/nurse-services'),
+                  ),
+                  // 2. Mother & Baby Care
+                  _HomeGridItem(
+                    title: 'Mother & Baby',
+                    imageAsset: 'assets/images/services/baby_care.jpg',
+                    icon: Icons.child_care_rounded,
+                    onTap: () => context.push('/nurses?service=Mother%20%26%20Baby'),
+                  ),
+                  // 3. Elder Care
+                  _HomeGridItem(
+                    title: 'Elder Care',
+                    icon: Icons.elderly_rounded,
+                    onTap: () => context.push('/nurses?service=Elder%20Care'),
+                  ),
+                  // 4. Physiotherapy
+                  _HomeGridItem(
+                    title: 'Physiotherapy',
+                    imageAsset: 'assets/images/services/physiotherapy.jpg',
+                    icon: Icons.accessibility_new_rounded,
+                    onTap: () => context.push('/services/physiotherapy'),
+                  ),
+                  // 5. Doctor Visit
+                  _HomeGridItem(
+                    title: 'Doctor Visit',
+                    imageAsset: 'assets/images/services/doctor_visit.jpg',
+                    icon: Icons.medical_information_rounded,
+                    onTap: () => context.push('/services/doctor-visit'),
+                  ),
+                  // 6. Care Centres
+                  _HomeGridItem(
+                    title: 'Care Centres',
+                    imageAsset: 'assets/images/services/care_centres.jpg',
+                    icon: Icons.apartment_rounded,
+                    onTap: () => context.push('/centres'),
+                  ),
+                  // 7. Equipment’s
+                  _HomeGridItem(
+                    title: 'Equipment’s',
+                    imageAsset: 'assets/images/services/equipment.jpg',
+                    icon: Icons.wheelchair_pickup_rounded,
+                    onTap: () => context.push('/equipment'),
+                  ),
+                  // 8. See All
+                  _HomeGridItem(
+                    title: 'See All',
+                    icon: Icons.grid_view_rounded,
+                    isSeeAll: true,
+                    onTap: () => context.push('/nurse-services'),
+                  ),
+                ],
+              ),
             ),
-          ),
+
+            const SizedBox(height: 16),
+
+            // -----------------------------------------------------------------
+            // 3. QUICK 45-MIN CARE PROMO BANNER (Minimal & Reduced Height)
+            // -----------------------------------------------------------------
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: InkWell(
+                onTap: () {
+                  _handleBookingGuard(() => context.push('/nurse-quick-booking'));
+                },
+                borderRadius: BorderRadius.circular(14),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF0F766E), Color(0xFF115E59)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF0F766E).withValues(alpha: 0.16),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 34,
+                        height: 34,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.16),
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
+                        ),
+                        child: const Icon(Icons.bolt_rounded, size: 20, color: Color(0xFFFDE047)),
+                      ),
+                      const SizedBox(width: 12),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Need a Nurse in 45 Mins?',
+                              style: TextStyle(
+                                fontSize: 13.5,
+                                fontWeight: FontWeight.w800,
+                                color: Colors.white,
+                                letterSpacing: -0.2,
+                              ),
+                            ),
+                            SizedBox(height: 1.5),
+                            Text(
+                              'Emergency injections, dressing & vitals check at doorstep',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: Color(0xFFCCFBF1),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.14),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.arrow_forward_rounded, size: 13, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 18),
+
+            // -----------------------------------------------------------------
+            // 4. OUR NURSE CARE (8 Grid Items: 7 Clinical + 8th See All)
+            // -----------------------------------------------------------------
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 10),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    'Our Nurse Care',
+                    style: TextStyle(
+                      fontSize: 16.5,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  InkWell(
+                    onTap: () => context.push('/nurse-services'),
+                    child: const Text(
+                      'View all ➔',
+                      style: TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                padding: EdgeInsets.zero,
+                crossAxisCount: 4,
+                childAspectRatio: 0.70,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 10,
+                children: [
+                  _HomeGridItem(
+                    title: 'Catheter Care',
+                    imageAsset: 'assets/images/services/catheter_care.jpg',
+                    icon: Icons.medical_services_rounded,
+                    onTap: () => context.push('/nurses?service=Catheter Care'),
+                  ),
+                  _HomeGridItem(
+                    title: 'Ryles Tube',
+                    imageAsset: 'assets/images/services/ryles_tube.jpg',
+                    icon: Icons.medication_liquid_rounded,
+                    onTap: () => context.push('/nurses?service=Ryles Tube'),
+                  ),
+                  _HomeGridItem(
+                    title: 'Wound Dressing',
+                    imageAsset: 'assets/images/services/wound_dressing.jpg',
+                    icon: Icons.healing_rounded,
+                    onTap: () => context.push('/nurses?service=Wound Dressing'),
+                  ),
+                  _HomeGridItem(
+                    title: 'Injection',
+                    imageAsset: 'assets/images/services/injection.jpg',
+                    icon: Icons.vaccines_rounded,
+                    onTap: () => context.push('/nurses?service=Injection'),
+                  ),
+                  _HomeGridItem(
+                    title: 'IV Care',
+                    imageAsset: 'assets/images/services/iv_care.jpg',
+                    icon: Icons.water_drop_rounded,
+                    onTap: () => context.push('/nurses?service=IV Care'),
+                  ),
+                  _HomeGridItem(
+                    title: 'Tracheostomy',
+                    imageAsset: 'assets/images/services/tracheostomy.jpg',
+                    icon: Icons.masks_rounded,
+                    onTap: () => context.push('/nurses?service=Tracheostomy'),
+                  ),
+                  _HomeGridItem(
+                    title: 'Vital Monitoring',
+                    imageAsset: 'assets/images/services/vital_monitoring.jpg',
+                    icon: Icons.monitor_heart_rounded,
+                    onTap: () => context.push('/nurses?service=Vital Monitoring'),
+                  ),
+                  _HomeGridItem(
+                    title: 'See All',
+                    icon: Icons.grid_view_rounded,
+                    isSeeAll: true,
+                    onTap: () => context.push('/nurse-services'),
+                  ),
+                ],
+              ),
+            ),
 
           const SizedBox(height: 22),
 

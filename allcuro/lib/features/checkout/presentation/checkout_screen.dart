@@ -115,7 +115,13 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
             subtitle: widget.item != null && widget.item!.isNotEmpty
                 ? 'Booking: ${widget.item}'
                 : 'Confirm your booking',
-            onBack: () => context.pop(),
+            onBack: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
+            },
           ),
           breakdownAsync.when(
             loading: () => const Padding(

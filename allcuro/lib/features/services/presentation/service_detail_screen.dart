@@ -98,7 +98,13 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                 Row(
                   children: [
                     InkWell(
-                      onTap: () => context.pop(),
+                      onTap: () {
+                        if (context.canPop()) {
+                          context.pop();
+                        } else {
+                          context.go('/');
+                        }
+                      },
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                       child: Container(
                         padding: const EdgeInsets.all(7),

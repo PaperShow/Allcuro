@@ -66,7 +66,13 @@ class CentreVisitPassScreen extends ConsumerWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.ink),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/centres');
+              }
+            },
           ),
           const SizedBox(width: 4),
           Expanded(

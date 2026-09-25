@@ -180,7 +180,13 @@ class _NurseDetail extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Tappable(
-                  onTap: () => context.pop(),
+                  onTap: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/nurses');
+                    }
+                  },
                   borderRadius: BorderRadius.circular(AppRadius.sm),
                   child: const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 4, vertical: 2),

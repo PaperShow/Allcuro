@@ -158,7 +158,13 @@ class _CentreDetail extends StatelessWidget {
                 left: 16,
                 top: 16,
                 child: Tappable(
-                  onTap: () => context.pop(),
+                  onTap: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/centres');
+                    }
+                  },
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
                     width: 40,

@@ -228,7 +228,13 @@ class _NurseBookingTrackerScreenState
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: AppColors.ink),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/bookings');
+              }
+            },
           ),
           const SizedBox(width: 4),
           Expanded(
