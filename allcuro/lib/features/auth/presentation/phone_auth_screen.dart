@@ -4,6 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../data/auth_service.dart';
@@ -88,10 +89,35 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _BackButton(
-                            onTap: state.step == PhoneAuthStep.otp
-                                ? notifier.editPhoneNumber
-                                : widget.onBack,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _BackButton(
+                                onTap: state.step == PhoneAuthStep.otp
+                                    ? notifier.editPhoneNumber
+                                    : widget.onBack,
+                              ),
+                              if (state.step == PhoneAuthStep.phone)
+                                TextButton(
+                                  onPressed: () => context.go('/'),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: AppColors.primaryForeground,
+                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                                    side: BorderSide(
+                                      color: AppColors.primaryForeground.withValues(alpha: 0.35),
+                                    ),
+                                    shape: const StadiumBorder(),
+                                  ),
+                                  child: const Text(
+                                    'Skip ➔',
+                                    style: TextStyle(
+                                      fontSize: 12.5,
+                                      fontWeight: FontWeight.w700,
+                                      color: AppColors.primaryForeground,
+                                    ),
+                                  ),
+                                ),
+                            ],
                           ),
                           const SizedBox(height: 12),
                           Expanded(
@@ -131,7 +157,9 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                                       },
                                       onVerify: () async {
                                         await notifier.verifyOtp(_otpController.text);
-                                        if (mounted) widget.onAuthenticated();
+                                        if (mounted && ref.read(phoneAuthViewModelProvider).error == null) {
+                                          widget.onAuthenticated();
+                                        }
                                       },
                                     ),
                             ),
@@ -225,7 +253,7 @@ class _PhoneStepState extends State<_PhoneStep> {
       children: [
         const SizedBox(height: 8),
         Text(
-          'Enter your mobile\nnumber',
+          'Healthcare at\nyour Doorstep',
           style: appHeadingStyle(
             fontSize: 28,
             fontWeight: FontWeight.w800,
@@ -236,7 +264,7 @@ class _PhoneStepState extends State<_PhoneStep> {
         ),
         const SizedBox(height: 8),
         Text(
-          'We\'ll send a 6-digit one-time code to verify your account.',
+          'Enter your phone number to access certified care.',
           style: TextStyle(
             fontSize: 14,
             height: 1.4,
@@ -323,6 +351,7 @@ class _PhoneStepState extends State<_PhoneStep> {
                   ),
           ),
         ),
+
       ],
     );
   }

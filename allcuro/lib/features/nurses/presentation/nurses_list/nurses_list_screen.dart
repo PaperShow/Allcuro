@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../../core/ui/allcuro_chip.dart';
 import '../../../../core/ui/app_shell.dart';
 import '../../../../core/ui/screen_header.dart';
 import '../../../../core/ui/surface.dart';
@@ -12,15 +11,6 @@ import '../../../auth/presentation/auth_view_model.dart';
 import '../../../auth/presentation/quick_login_sheet.dart';
 import '../../data/models/nurse.dart';
 import 'nurses_list_view_model.dart';
-
-const _filters = [
-  'All Nurses',
-  'Elderly Care',
-  'Post-Op Recovery',
-  'ICU / Critical Care',
-  'Palliative',
-  'Pediatric',
-];
 
 class NursesListScreen extends ConsumerStatefulWidget {
   final String? initialService;

@@ -184,7 +184,7 @@ class AppShell extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               if (showVisitPopup)
-                _MinimalActiveNurseVisitPopup(booking: activeNurseBooking!),
+                _MinimalActiveNurseVisitPopup(booking: activeNurseBooking),
               ?bottomBar,
               DecoratedBox(
                 decoration: const BoxDecoration(
@@ -215,16 +215,16 @@ class AppShell extends ConsumerWidget {
                                       gradient: active
                                           ? const LinearGradient(
                                               colors: [
-                                                Color(0xFF0F766E),
-                                                Color(0xFF059669),
+                                                AppColors.secondaryAccent,
+                                                Color(0xFFF97316),
                                               ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
                                             )
-                                          : const LinearGradient(
+                                          : LinearGradient(
                                               colors: [
-                                                Color(0xFFCCFBF1),
-                                                Color(0xFFA7F3D0),
+                                                AppColors.secondaryAccentSoft,
+                                                AppColors.secondaryAccentBorder.withValues(alpha: 0.6),
                                               ],
                                               begin: Alignment.topLeft,
                                               end: Alignment.bottomRight,
@@ -232,7 +232,7 @@ class AppShell extends ConsumerWidget {
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
-                                          color: const Color(0xFF0F766E)
+                                          color: AppColors.secondaryAccent
                                               .withValues(
                                                 alpha: active ? 0.35 : 0.15,
                                               ),
@@ -245,8 +245,8 @@ class AppShell extends ConsumerWidget {
                                       tab.icon,
                                       size: 20,
                                       color: active
-                                          ? const Color(0xFFFDE047)
-                                          : const Color(0xFF0F766E),
+                                          ? Colors.white
+                                          : AppColors.secondaryAccent,
                                     ),
                                   )
                                 else
@@ -279,7 +279,7 @@ class AppShell extends ConsumerWidget {
                                         ? FontWeight.w800
                                         : FontWeight.w600,
                                     color: active
-                                        ? AppColors.primary
+                                        ? (tab.isSpecial ? AppColors.secondaryAccent : AppColors.primary)
                                         : AppColors.mutedForeground,
                                   ),
                                 ),

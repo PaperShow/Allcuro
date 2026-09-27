@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../core/theme/app_theme.dart';
 
-/// First screen a signed-out customer sees. Branded intro with primary CTA to start
-/// and option to explore as a guest without signing up immediately.
-class WelcomeScreen extends StatelessWidget {
+/// Minimalist, premium Welcome Screen for the ALLCURO Customer App.
+/// Stripped of clutter, marketing paragraphs, and busy shapes — focusing purely
+/// on clean brand presence, calm aesthetic, and the essential actions.
+class WelcomeScreen extends StatefulWidget {
   final VoidCallback onGetStarted;
   final VoidCallback onExploreGuest;
 
@@ -15,177 +17,273 @@ class WelcomeScreen extends StatelessWidget {
   });
 
   @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 650),
+    );
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    );
+
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.03),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOutCubic,
+    ));
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
-        child: Stack(
-          children: [
-            Positioned(
-              top: -60,
-              right: -70,
-              child: _Blob(size: 220, opacity: 0.10),
-            ),
-            Positioned(
-              top: 160,
-              left: -90,
-              child: _Blob(size: 180, opacity: 0.08),
-            ),
-            Positioned(
-              bottom: 200,
-              right: -60,
-              child: _Blob(size: 150, opacity: 0.07),
-            ),
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(28, 32, 28, 24),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 64,
-                      height: 64,
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: AppColors.primaryForeground.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(AppRadius.xl),
-                        border: Border.all(
-                          color: AppColors.primaryForeground.withValues(alpha: 0.2),
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.monitor_heart_rounded,
-                        size: 34,
-                        color: AppColors.primaryForeground,
-                      ),
-                    ),
-                    const Spacer(),
-                    const Text(
-                      'ALLCURO',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 2.5,
-                        color: AppColors.primaryForeground,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'Healthcare,\nMade Simple.',
-                      style: appHeadingStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.w800,
-                        height: 1.12,
-                        letterSpacing: -0.8,
-                        color: AppColors.primaryForeground,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-                    Text(
-                      'Book verified nurses, top-rated home care centre beds, and rent ICU-grade medical equipment — all in one tap.',
-                      style: TextStyle(
-                        fontSize: 15,
-                        height: 1.4,
-                        color: AppColors.primaryForeground.withValues(alpha: 0.82),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    // Primary CTA: Sign In / Register (Minimal white pill)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 48,
-                      child: ElevatedButton(
-                        onPressed: onGetStarted,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white,
-                          foregroundColor: const Color(0xFF0F766E),
-                          elevation: 0,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              'Sign In / Register',
-                              style: TextStyle(
-                                fontSize: 14.5,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: -0.2,
-                              ),
-                            ),
-                            SizedBox(width: 6),
-                            Icon(Icons.arrow_forward_rounded, size: 16),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    // Secondary CTA: Explore as Guest (Minimal text button)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 42,
-                      child: TextButton(
-                        onPressed: onExploreGuest,
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primaryForeground,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                        ),
-                        child: Text(
-                          'Explore as Guest ➔',
-                          style: TextStyle(
-                            fontSize: 13.5,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.primaryForeground.withValues(alpha: 0.9),
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'By continuing, you agree to ALLCURO\'s Terms of Service and Privacy Policy.',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        height: 1.4,
-                        color: AppColors.primaryForeground.withValues(alpha: 0.55),
-                      ),
-                    ),
+      backgroundColor: const Color(0xFF0A1F13),
+      body: Stack(
+        children: [
+          // Subtle, calm atmospheric gradient (no noisy blobs)
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFF0F2E1B),
+                    Color(0xFF0B2415),
+                    Color(0xFF07180E),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+
+          // Soft ambient radial glow centered behind brand mark
+          Positioned(
+            top: screenHeight * 0.22,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Container(
+                width: 260,
+                height: 260,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  gradient: RadialGradient(
+                    colors: [
+                      const Color(0xFF26593B).withValues(alpha: 0.32),
+                      const Color(0xFF26593B).withValues(alpha: 0.0),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          // Main content
+          SafeArea(
+            child: FadeTransition(
+              opacity: _fadeAnimation,
+              child: SlideTransition(
+                position: _slideAnimation,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                  child: Column(
+                    children: [
+                      const Spacer(flex: 5),
+
+                      // Brand Emblem + Name + Tagline
+                      const _BrandIdentity(),
+
+                      const Spacer(flex: 6),
+
+                      // Minimal Action Buttons & Essential Fine Print
+                      _ActionSection(
+                        onGetStarted: widget.onGetStarted,
+                        onExploreGuest: widget.onExploreGuest,
+                      ),
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
-class _Blob extends StatelessWidget {
-  final double size;
-  final double opacity;
-
-  const _Blob({required this.size, required this.opacity});
+/// Minimal brand mark with wordmark and single tagline
+class _BrandIdentity extends StatelessWidget {
+  const _BrandIdentity();
 
   @override
   Widget build(BuildContext context) {
-    return IgnorePointer(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.primaryForeground.withValues(alpha: opacity),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Logo Container (ready to swap with Image.asset('assets/images/logo.png') once generated)
+        Container(
+          width: 76,
+          height: 76,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: Colors.white.withValues(alpha: 0.14),
+              width: 1.2,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.22),
+                blurRadius: 24,
+                offset: const Offset(0, 10),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.monitor_heart_rounded,
+            size: 36,
+            color: Colors.white,
+          ),
         ),
-      ),
+
+        const SizedBox(height: 26),
+
+        // Brand Name
+        Text(
+          'ALLCURO',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 22,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 4.5,
+            color: Colors.white,
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // Minimal Required Tagline
+        Text(
+          'Healthcare, made simple.',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 14.5,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.1,
+            color: Colors.white.withValues(alpha: 0.72),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Minimalist action area: Primary CTA, Guest Option, and Legal Notice
+class _ActionSection extends StatelessWidget {
+  final VoidCallback onGetStarted;
+  final VoidCallback onExploreGuest;
+
+  const _ActionSection({
+    required this.onGetStarted,
+    required this.onExploreGuest,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Primary CTA Button
+        SizedBox(
+          width: double.infinity,
+          height: 52,
+          child: ElevatedButton(
+            onPressed: onGetStarted,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.white,
+              foregroundColor: const Color(0xFF0B2415),
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+            ),
+            child: Text(
+              'Get Started',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 15,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.1,
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 12),
+
+        // Secondary / Guest CTA Button
+        SizedBox(
+          width: double.infinity,
+          height: 44,
+          child: TextButton(
+            onPressed: onExploreGuest,
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white.withValues(alpha: 0.8),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+              ),
+            ),
+            child: Text(
+              'Explore as guest',
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: Colors.white.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 18),
+
+        // Discrete Legal Note
+        Text(
+          'By continuing, you agree to our Terms & Privacy Policy',
+          textAlign: TextAlign.center,
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 11,
+            fontWeight: FontWeight.w400,
+            color: Colors.white.withValues(alpha: 0.42),
+            height: 1.4,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -17,7 +17,7 @@ import '../features/nurses/presentation/nurses_list/nurses_list_screen.dart';
 import '../features/nurses/presentation/quick_booking/nurse_quick_booking_screen.dart';
 import '../features/nurses/presentation/tracker/nurse_booking_tracker_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
-import '../features/services/presentation/all_nurse_services_screen.dart';
+import '../features/services/presentation/category_services_screen.dart';
 import '../features/services/presentation/service_detail_screen.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -41,7 +41,7 @@ final GoRouter appRouter = GoRouter(
           if (context.canPop()) {
             context.pop();
           } else {
-            context.go('/welcome');
+            context.go('/');
           }
         },
         onAuthenticated: () => context.go('/onboarding'),
@@ -58,8 +58,16 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const HomeScreen(),
     ),
     GoRoute(
+      path: '/category-services/:category',
+      builder: (context, state) => CategoryServicesScreen(
+        category: state.pathParameters['category'] ?? 'nursing',
+      ),
+    ),
+    GoRoute(
       path: '/nurse-services',
-      builder: (context, state) => const AllNurseServicesScreen(),
+      builder: (context, state) => const CategoryServicesScreen(
+        category: 'nursing',
+      ),
     ),
     GoRoute(
       path: '/services/:serviceId',

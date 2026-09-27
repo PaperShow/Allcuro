@@ -31,9 +31,16 @@ class AppColors {
   static const success = Color(0xFF419363);
   static const successSoft = Color(0xFFDDF4E4);
 
+  /// Secondary brand accent — Vibrant Amber/Tangerine (#ED6C00).
+  /// High-energy, warm clinical accent for urgent services (45-min nurse),
+  /// express delivery badges, live active tracking states, and emergency chips.
+  static const secondaryAccent = Color(0xFFED6C00);
+  static const secondaryAccentSoft = Color(0xFFFFF3E6);
+  static const secondaryAccentBorder = Color(0xFFFFD8B3);
+
   /// Muted amber — used sparingly: pending KYC, expiring documents.
-  static const warning = Color(0xFFF2A33F);
-  static const warningSoft = Color(0xFFFDECD6);
+  static const warning = Color(0xFFED6C00);
+  static const warningSoft = Color(0xFFFFF3E6);
 
   static const destructive = Color(0xFFDA2B29);
   static const destructiveForeground = Color(0xFFFFFFFF);

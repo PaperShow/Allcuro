@@ -39,7 +39,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     _controller.forward();
 
     // Navigate based on auth status after intro animation
-    Future.delayed(const Duration(milliseconds: 2000), () {
+    Future.delayed(const Duration(milliseconds: 3000), () {
       if (!mounted) return;
       final auth = ref.read(authViewModelProvider);
       switch (auth.status) {
@@ -51,7 +51,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           break;
         case AuthStatus.unauthenticated:
         case AuthStatus.unknown:
-          context.go('/welcome');
+          context.go('/auth/phone');
           break;
       }
     });
@@ -83,7 +83,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     color: AppColors.primaryForeground.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppRadius.xxl),
                     border: Border.all(
-                      color: AppColors.primaryForeground.withValues(alpha: 0.25),
+                      color: AppColors.primaryForeground.withValues(
+                        alpha: 0.25,
+                      ),
                       width: 1.5,
                     ),
                     boxShadow: [
@@ -122,7 +124,9 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         letterSpacing: 0.5,
-                        color: AppColors.primaryForeground.withValues(alpha: 0.8),
+                        color: AppColors.primaryForeground.withValues(
+                          alpha: 0.8,
+                        ),
                       ),
                     ),
                   ],

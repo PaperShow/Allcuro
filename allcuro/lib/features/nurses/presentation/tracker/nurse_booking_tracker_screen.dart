@@ -383,7 +383,25 @@ class _NurseBookingTrackerScreenState
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Live Visit Status', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: AppColors.ink)),
-              Text('ETA: 12 mins', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, color: AppColors.primary)),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                decoration: BoxDecoration(
+                  color: AppColors.secondaryAccentSoft,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  border: Border.all(color: AppColors.secondaryAccentBorder, width: 0.8),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.bolt_rounded, size: 13, color: AppColors.secondaryAccent),
+                    SizedBox(width: 2),
+                    Text(
+                      'ETA: 12 mins',
+                      style: TextStyle(fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.secondaryAccent),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 14),
@@ -597,14 +615,20 @@ class _StepTile extends StatelessWidget {
               width: 20,
               height: 20,
               decoration: BoxDecoration(
-                color: isDone ? AppColors.primary : AppColors.secondary,
+                color: isCurrent
+                    ? AppColors.secondaryAccent
+                    : (isDone ? AppColors.primary : AppColors.secondary),
                 shape: BoxShape.circle,
-                border: isCurrent ? Border.all(color: AppColors.primarySoft, width: 3) : null,
+                border: isCurrent
+                    ? Border.all(color: AppColors.secondaryAccentBorder, width: 2.5)
+                    : null,
               ),
               child: Icon(
-                isDone ? Icons.check : Icons.circle,
-                size: isDone ? 13 : 8,
-                color: isDone ? Colors.white : AppColors.mutedForeground,
+                isCurrent
+                    ? Icons.play_arrow_rounded
+                    : (isDone ? Icons.check : Icons.circle),
+                size: isDone ? 13 : (isCurrent ? 12 : 8),
+                color: (isDone || isCurrent) ? Colors.white : AppColors.mutedForeground,
               ),
             ),
             if (!isLast)

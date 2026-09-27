@@ -14,6 +14,7 @@ import '../../equipment/data/equipment_repository.dart';
 import '../../equipment/data/models/equipment.dart';
 import '../../nurses/data/models/nurse.dart';
 import '../../nurses/data/nurses_repository.dart';
+import '../data/master_services_catalog.dart';
 import '../data/services_catalog.dart';
 
 class ServiceDetailScreen extends ConsumerStatefulWidget {
@@ -74,12 +75,93 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
 
   @override
   Widget build(BuildContext context) {
-    final service =
+    final masterService = MasterServicesCatalog.getById(widget.serviceId);
+    final fallbackCat =
         ServicesCatalog.getById(widget.serviceId) ?? ServicesCatalog.allServices.first;
+
+    final serviceName = masterService?.name ?? fallbackCat.name;
+    final servicePrice = masterService?.price ?? fallbackCat.priceRange;
+    final serviceDesc = masterService?.description ?? fallbackCat.description;
+    final serviceDuration = masterService?.duration ?? '30–45 min';
+    final serviceProfessional = masterService?.professional ?? fallbackCat.requiredDegree;
+    final serviceNotes = masterService?.notes;
+    final serviceNotIncluded = masterService?.notIncluded;
+
+    final List<String> proceduresList = masterService != null
+        ? masterService.includes
+            .split(';')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList()
+        : fallbackCat.procedures;
 
     return AppShell(
       currentPath: '/services/${widget.serviceId}',
-      showQuickActions: false,
+      bottomBar: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: AppColors.card,
+          border: const Border(top: BorderSide(color: AppColors.border)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          top: false,
+          child: Row(
+            children: [
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    servicePrice,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.ink,
+                    ),
+                  ),
+                  Text(
+                    serviceDuration,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.mutedForeground,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
+              const Spacer(),
+              ElevatedButton.icon(
+                onPressed: () {
+                  _handleBookingGuard(() {
+                    context.push('/nurse-quick-booking');
+                  });
+                },
+                icon: const Icon(Icons.bolt_rounded, size: 18),
+                label: const Text(
+                  'Book Service',
+                  style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 11),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  elevation: 0,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
       child: Column(
         children: [
           // -----------------------------------------------------------------
@@ -122,28 +204,42 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                     ),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        service.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.ink,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            serviceName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.ink,
+                            ),
+                          ),
+                          Text(
+                            '$serviceDuration · $serviceProfessional',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              color: AppColors.mutedForeground,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                    const SizedBox(width: 8),
                     // Price badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.primarySoft,
                         borderRadius: BorderRadius.circular(AppRadius.pill),
                       ),
                       child: Text(
-                        service.priceRange,
+                        servicePrice,
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 12,
                           fontWeight: FontWeight.w800,
                           color: AppColors.primary,
                         ),
@@ -151,9 +247,9 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                     ),
                   ],
                 ),
-                const SizedBox(height: 7),
+                const SizedBox(height: 10),
                 Text(
-                  service.description,
+                  serviceDesc,
                   style: const TextStyle(
                     fontSize: 12.5,
                     height: 1.45,
@@ -162,7 +258,7 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                 ),
                 const SizedBox(height: 10),
 
-                // ── Procedures accordion ──────────────────────────────────
+                // ── Procedures & Inclusions accordion ──────────────────────
                 GestureDetector(
                   onTap: () => setState(() => _proceduresExpanded = !_proceduresExpanded),
                   child: Container(
@@ -174,14 +270,14 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                     child: Row(
                       children: [
                         const Icon(
-                          Icons.list_alt_rounded,
+                          Icons.check_circle_outline_rounded,
                           size: 15,
                           color: AppColors.primary,
                         ),
                         const SizedBox(width: 7),
                         const Expanded(
                           child: Text(
-                            'Procedures & Clinical Scope',
+                            'What\'s Included in this Visit',
                             style: TextStyle(
                               fontSize: 12.5,
                               fontWeight: FontWeight.w700,
@@ -210,35 +306,78 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                       border: Border.all(color: AppColors.border),
                     ),
                     child: Column(
-                      children: service.procedures.map((proc) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 3),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 1),
-                                child: Icon(
-                                  Icons.check_circle_rounded,
-                                  size: 13,
-                                  color: AppColors.success,
-                                ),
-                              ),
-                              const SizedBox(width: 7),
-                              Expanded(
-                                child: Text(
-                                  proc,
-                                  style: const TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                    color: AppColors.ink,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ...proceduresList.map((proc) {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 3),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 1),
+                                  child: Icon(
+                                    Icons.check_circle_rounded,
+                                    size: 13,
+                                    color: AppColors.success,
                                   ),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(width: 7),
+                                Expanded(
+                                  child: Text(
+                                    proc,
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w500,
+                                      color: AppColors.ink,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        if (serviceNotIncluded != null &&
+                            serviceNotIncluded.isNotEmpty &&
+                            serviceNotIncluded != '—') ...[
+                          const SizedBox(height: 8),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.info_outline, size: 14, color: AppColors.mutedForeground),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    'Excludes: $serviceNotIncluded',
+                                    style: const TextStyle(
+                                      fontSize: 11,
+                                      color: AppColors.mutedForeground,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                        );
-                      }).toList(),
+                        ],
+                        if (serviceNotes != null &&
+                            serviceNotes.isNotEmpty &&
+                            serviceNotes != '—') ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            'Note: $serviceNotes',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontStyle: FontStyle.italic,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
                 ],
@@ -276,9 +415,10 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                           child: CircularProgressIndicator(color: AppColors.primary));
                     }
                     final all = snapshot.data!;
+                    final degreeFilters = fallbackCat.nurseDegreeFilters;
                     final filtered = all.where((n) {
-                      if (service.nurseDegreeFilters.isEmpty) return true;
-                      return service.nurseDegreeFilters.any((f) =>
+                      if (degreeFilters.isEmpty) return true;
+                      return degreeFilters.any((f) =>
                           n.level.toLowerCase().contains(f.toLowerCase()) ||
                           n.tags.any((t) => t.toLowerCase().contains(f.toLowerCase())));
                     }).toList();
@@ -287,7 +427,7 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                       padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
                       physics: const BouncingScrollPhysics(),
                       itemCount: nurses.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, i) => _NurseCard(
                         nurse: nurses[i],
                         onView: () => context.push('/nurses/${nurses[i].id}'),
@@ -311,7 +451,7 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                       padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
                       physics: const BouncingScrollPhysics(),
                       itemCount: centres.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, i) => _CentreCard(
                         centre: centres[i],
                         onView: () => context.push('/centres/${centres[i].id}'),
@@ -335,7 +475,7 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                       padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
                       physics: const BouncingScrollPhysics(),
                       itemCount: equipment.length,
-                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      separatorBuilder: (_, _) => const SizedBox(height: 10),
                       itemBuilder: (context, i) => _EquipmentCard(
                         equipment: equipment[i],
                         onRent: () => _handleBookingGuard(() => context.push('/equipment')),
