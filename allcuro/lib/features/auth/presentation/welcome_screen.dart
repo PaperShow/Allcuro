@@ -42,10 +42,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     _slideAnimation = Tween<Offset>(
       begin: const Offset(0, 0.03),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeOutCubic,
-    ));
+    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic));
 
     _controller.forward();
   }
@@ -113,12 +110,67 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 28.0),
                   child: Column(
                     children: [
+                      // Top Row with discrete Skip button
+                      // Align(
+                      //   alignment: Alignment.topRight,
+                      //   child: TextButton(
+                      //     onPressed: widget.onExploreGuest,
+                      //     style: TextButton.styleFrom(
+                      //       foregroundColor: Colors.white,
+                      //       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                      //       side: BorderSide(
+                      //         color: Colors.white.withValues(alpha: 0.28),
+                      //       ),
+                      //       shape: const StadiumBorder(),
+                      //     ),
+                      //     child: Text(
+                      //       'Skip ➔',
+                      //       style: GoogleFonts.plusJakartaSans(
+                      //         fontSize: 12.5,
+                      //         fontWeight: FontWeight.w700,
+                      //         color: Colors.white.withValues(alpha: 0.9),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // Logo Container (ready to swap with Image.asset('assets/images/logo.png') once generated)
+                      const SizedBox(height: 25),
+
+                      Align(
+                        alignment: AlignmentGeometry.centerLeft,
+                        child: Container(
+                          width: 76,
+                          height: 76,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(22),
+                            border: Border.all(
+                              color: Colors.white.withValues(alpha: 0.14),
+                              width: 1.2,
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.22),
+                                blurRadius: 24,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.monitor_heart_rounded,
+                            size: 36,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
                       const Spacer(flex: 5),
 
                       // Brand Emblem + Name + Tagline
                       const _BrandIdentity(),
 
-                      const Spacer(flex: 6),
+                      // const Spacer(flex: 1),
+                      const SizedBox(height: 25),
 
                       // Minimal Action Buttons & Essential Fine Print
                       _ActionSection(
@@ -146,37 +198,10 @@ class _BrandIdentity extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      // mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Logo Container (ready to swap with Image.asset('assets/images/logo.png') once generated)
-        Container(
-          width: 76,
-          height: 76,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(22),
-            border: Border.all(
-              color: Colors.white.withValues(alpha: 0.14),
-              width: 1.2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.22),
-                blurRadius: 24,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: const Icon(
-            Icons.monitor_heart_rounded,
-            size: 36,
-            color: Colors.white,
-          ),
-        ),
-
-        const SizedBox(height: 26),
-
+        const SizedBox(height: 10),
         // Brand Name
         Text(
           'ALLCURO',
@@ -198,6 +223,19 @@ class _BrandIdentity extends StatelessWidget {
             fontWeight: FontWeight.w400,
             letterSpacing: 0.1,
             color: Colors.white.withValues(alpha: 0.72),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // Minimal Required Tagline
+        Text(
+          'Complete home healthcare: Nurses, beds & equipment',
+          style: GoogleFonts.plusJakartaSans(
+            fontSize: 20,
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.1,
+            color: Colors.white,
           ),
         ),
       ],

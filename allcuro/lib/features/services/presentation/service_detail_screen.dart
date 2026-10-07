@@ -8,10 +8,6 @@ import '../../../core/ui/surface.dart';
 import '../../../core/utils/currency.dart';
 import '../../auth/presentation/auth_view_model.dart';
 import '../../auth/presentation/quick_login_sheet.dart';
-import '../../centres/data/centres_repository.dart';
-import '../../centres/data/models/centre.dart';
-import '../../equipment/data/equipment_repository.dart';
-import '../../equipment/data/models/equipment.dart';
 import '../../nurses/data/models/nurse.dart';
 import '../../nurses/data/nurses_repository.dart';
 import '../data/master_services_catalog.dart';
@@ -26,34 +22,16 @@ class ServiceDetailScreen extends ConsumerStatefulWidget {
   ConsumerState<ServiceDetailScreen> createState() => _ServiceDetailScreenState();
 }
 
-class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen> {
   bool _proceduresExpanded = false;
 
-  // Cached futures so they don't re-trigger on every rebuild
+  // Cached nurses future so it doesn't re-trigger on every rebuild
   Future<List<Nurse>>? _nursesFuture;
-  Future<List<Centre>>? _centresFuture;
-  Future<List<Equipment>>? _equipmentFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _nursesFuture ??= ref.read(nursesRepositoryProvider).getAll();
-    _centresFuture ??= ref.read(centresRepositoryProvider).getAll();
-    _equipmentFuture ??= ref.read(equipmentRepositoryProvider).getAll();
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   void _handleBookingGuard(VoidCallback onAuthenticated) {
@@ -383,129 +361,126 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen>
                 ],
                 const SizedBox(height: 10),
 
-                // ── Tab bar ──────────────────────────────────────────────
-                TabBar(
-                  controller: _tabController,
-                  labelStyle: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
-                  unselectedLabelStyle:
-                      const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600),
-                  labelColor: AppColors.primary,
-                  unselectedLabelColor: AppColors.mutedForeground,
-                  indicatorColor: AppColors.primary,
-                  indicatorWeight: 2.5,
-                  tabs: const [Tab(text: 'Nurses'), Tab(text: 'Care Centres'), Tab(text: 'Equipment')],
+                const SizedBox(height: 12),
+
+                // ── Nurse Section Header ────────────────────────────────
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.verified_user_rounded,
+                      size: 16,
+                      color: AppColors.primary,
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'Available Certified Nurses & Clinicians',
+                      style: TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: const Text(
+                        'Verified · On-Duty',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
           ),
 
           // -----------------------------------------------------------------
-          // 2. TAB VIEWS
+          // 2. DIRECT NURSES LIST (No tabs for centres/equipment)
           // -----------------------------------------------------------------
           Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                // ── NURSES ─────────────────────────────────────────────
-                FutureBuilder<List<Nurse>>(
-                  future: _nursesFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: AppColors.primary));
-                    }
-                    final all = snapshot.data!;
-                    final degreeFilters = fallbackCat.nurseDegreeFilters;
-                    final filtered = all.where((n) {
-                      if (degreeFilters.isEmpty) return true;
-                      return degreeFilters.any((f) =>
-                          n.level.toLowerCase().contains(f.toLowerCase()) ||
-                          n.tags.any((t) => t.toLowerCase().contains(f.toLowerCase())));
-                    }).toList();
-                    final nurses = filtered.isNotEmpty ? filtered : all;
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: nurses.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
-                      itemBuilder: (context, i) => _NurseCard(
-                        nurse: nurses[i],
-                        onView: () => context.push('/nurses/${nurses[i].id}'),
-                        onBook: () =>
-                            _handleBookingGuard(() => context.push('/nurse-quick-booking')),
-                      ),
-                    );
-                  },
-                ),
-
-                // ── CARE CENTRES ────────────────────────────────────────
-                FutureBuilder<List<Centre>>(
-                  future: _centresFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: AppColors.primary));
-                    }
-                    final centres = snapshot.data!;
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: centres.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
-                      itemBuilder: (context, i) => _CentreCard(
-                        centre: centres[i],
-                        onView: () => context.push('/centres/${centres[i].id}'),
-                        onBook: () => _handleBookingGuard(
-                            () => context.push('/centre-booking/${centres[i].id}')),
-                      ),
-                    );
-                  },
-                ),
-
-                // ── EQUIPMENT ───────────────────────────────────────────
-                FutureBuilder<List<Equipment>>(
-                  future: _equipmentFuture,
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const Center(
-                          child: CircularProgressIndicator(color: AppColors.primary));
-                    }
-                    final equipment = snapshot.data!;
-                    return ListView.separated(
-                      padding: const EdgeInsets.fromLTRB(16, 14, 16, 20),
-                      physics: const BouncingScrollPhysics(),
-                      itemCount: equipment.length,
-                      separatorBuilder: (_, _) => const SizedBox(height: 10),
-                      itemBuilder: (context, i) => _EquipmentCard(
-                        equipment: equipment[i],
-                        onRent: () => _handleBookingGuard(() => context.push('/equipment')),
-                      ),
-                    );
-                  },
-                ),
-              ],
+            child: FutureBuilder<List<Nurse>>(
+              future: _nursesFuture,
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(color: AppColors.primary),
+                  );
+                }
+                final all = snapshot.data!;
+                final degreeFilters = fallbackCat.nurseDegreeFilters;
+                final filtered = all.where((n) {
+                  if (degreeFilters.isEmpty) return true;
+                  return degreeFilters.any((f) =>
+                      n.level.toLowerCase().contains(f.toLowerCase()) ||
+                      n.tags.any((t) => t.toLowerCase().contains(f.toLowerCase())));
+                }).toList();
+                final nurses = filtered.isNotEmpty ? filtered : all;
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: nurses.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
+                  itemBuilder: (context, i) => _NurseCard(
+                    nurse: nurses[i],
+                    onView: () => context.push('/nurses/${nurses[i].id}'),
+                    onBookOrSlot: () {
+                      _showSlotBookingSheet(context, nurses[i], serviceName);
+                    },
+                  ),
+                );
+              },
             ),
           ),
         ],
       ),
     );
   }
+
+  void _showSlotBookingSheet(BuildContext context, Nurse nurse, String serviceName) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => _NurseSlotBookingSheet(
+        nurse: nurse,
+        serviceName: serviceName,
+        onProceed: () {
+          Navigator.of(sheetContext).pop();
+          _handleBookingGuard(() {
+            context.push('/nurse-quick-booking');
+          });
+        },
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// NURSE CARD
+// NURSE CARD (No fixed price; displays availability & slot selector)
 // ─────────────────────────────────────────────────────────────────────────────
 class _NurseCard extends StatelessWidget {
   final Nurse nurse;
   final VoidCallback onView;
-  final VoidCallback onBook;
+  final VoidCallback onBookOrSlot;
 
-  const _NurseCard({required this.nurse, required this.onView, required this.onBook});
+  const _NurseCard({
+    required this.nurse,
+    required this.onView,
+    required this.onBookOrSlot,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final shiftPrice = nurse.shifts.isNotEmpty ? nurse.shifts.first.price : 600;
     return Surface(
+      onTap: onBookOrSlot,
       padding: const EdgeInsets.all(14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -514,8 +489,8 @@ class _NurseCard extends StatelessWidget {
             children: [
               // Avatar initials
               Container(
-                width: 46,
-                height: 46,
+                width: 48,
+                height: 48,
                 alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   color: AppColors.primarySoft,
@@ -548,19 +523,19 @@ class _NurseCard extends StatelessWidget {
                                   overflow: TextOverflow.ellipsis,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w800,
-                                    fontSize: 14,
+                                    fontSize: 14.5,
                                     color: AppColors.ink,
                                   ),
                                 ),
                               ),
                               const SizedBox(width: 4),
-                              const Icon(Icons.verified, color: AppColors.success, size: 13),
+                              const Icon(Icons.verified, color: AppColors.success, size: 14),
                             ],
                           ),
                         ),
                         Row(
                           children: [
-                            const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 13),
+                            const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 14),
                             const SizedBox(width: 2),
                             Text(
                               nurse.rating.toStringAsFixed(1),
@@ -574,149 +549,43 @@ class _NurseCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 3),
                     Text(
-                      '${nurse.level} · ${nurse.experience} yrs · ${nurse.city}',
-                      style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+                      '${nurse.level} · ${nurse.experience} yrs exp · ${nurse.city}',
+                      style: const TextStyle(fontSize: 11.5, color: AppColors.mutedForeground),
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
+
+          // Availability badge and action buttons (No individual fixed price shown!)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '${inr(shiftPrice)} / visit',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                ),
-              ),
               Row(
                 children: [
-                  OutlinedButton(
-                    onPressed: onView,
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.primary,
-                      side: const BorderSide(color: AppColors.border),
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md)),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: Size.zero,
+                  Container(
+                    width: 7,
+                    height: 7,
+                    decoration: const BoxDecoration(
+                      color: AppColors.success,
+                      shape: BoxShape.circle,
                     ),
-                    child: const Text('Profile', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
                   ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    onPressed: onBook,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md)),
-                      elevation: 0,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      minimumSize: Size.zero,
+                  const SizedBox(width: 5),
+                  const Text(
+                    'Available Today · 30m, 1h, custom',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.success,
                     ),
-                    child: const Text('Book Now',
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
                   ),
                 ],
               ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// CENTRE CARD
-// ─────────────────────────────────────────────────────────────────────────────
-class _CentreCard extends StatelessWidget {
-  final Centre centre;
-  final VoidCallback onView;
-  final VoidCallback onBook;
-
-  const _CentreCard({required this.centre, required this.onView, required this.onBook});
-
-  @override
-  Widget build(BuildContext context) {
-    return Surface(
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  color: AppColors.primarySoft,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(Icons.apartment_rounded, color: AppColors.primary, size: 22),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            centre.name,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 14,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                        ),
-                        Row(
-                          children: [
-                            const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 13),
-                            const SizedBox(width: 2),
-                            Text(
-                              centre.rating.toStringAsFixed(1),
-                              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      '${centre.type} · ${centre.locality}',
-                      style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                '${inr(centre.pricePerDay)} / day',
-                style: const TextStyle(
-                    fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
-              ),
               Row(
                 children: [
                   OutlinedButton(
@@ -726,28 +595,37 @@ class _CentreCard extends StatelessWidget {
                       side: const BorderSide(color: AppColors.border),
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md)),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: Size.zero,
                     ),
-                    child: const Text('Facility',
+                    child: const Text('Profile',
                         style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
-                    onPressed: onBook,
+                    onPressed: onBookOrSlot,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(AppRadius.md)),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                      ),
                       elevation: 0,
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       minimumSize: Size.zero,
                     ),
-                    child: const Text('Book Stay',
-                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text('Book Slot',
+                            style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
+                        SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_rounded, size: 12),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -760,64 +638,445 @@ class _CentreCard extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// EQUIPMENT CARD
+// NURSE DURATION & AVAILABILITY BOOKING SHEET
 // ─────────────────────────────────────────────────────────────────────────────
-class _EquipmentCard extends StatelessWidget {
-  final Equipment equipment;
-  final VoidCallback onRent;
+class _NurseSlotBookingSheet extends StatefulWidget {
+  final Nurse nurse;
+  final String serviceName;
+  final VoidCallback onProceed;
 
-  const _EquipmentCard({required this.equipment, required this.onRent});
+  const _NurseSlotBookingSheet({
+    required this.nurse,
+    required this.serviceName,
+    required this.onProceed,
+  });
+
+  @override
+  State<_NurseSlotBookingSheet> createState() => _NurseSlotBookingSheetState();
+}
+
+class _NurseSlotBookingSheetState extends State<_NurseSlotBookingSheet> {
+  // '30min', '1hr', '2hr', 'custom'
+  String _selectedDuration = '30min';
+  int _customHours = 4;
+  String _selectedSlot = '⚡ Within 45 mins (Immediate)';
+
+  int _calculatePrice() {
+    switch (_selectedDuration) {
+      case '30min':
+        return 399;
+      case '1hr':
+        return 699;
+      case '2hr':
+        return 1199;
+      case 'custom':
+        if (_customHours == 4) return 1999;
+        if (_customHours == 8) return 3499;
+        if (_customHours == 12) return 4899;
+        if (_customHours == 24) return 8499;
+        return _customHours * 450;
+      default:
+        return 699;
+    }
+  }
+
+  String _getDurationLabel() {
+    switch (_selectedDuration) {
+      case '30min':
+        return '30 Mins (Quick Procedure)';
+      case '1hr':
+        return '1 Hour (Standard Visit)';
+      case '2hr':
+        return '2 Hours (Extended Care)';
+      case 'custom':
+        return '$_customHours Hours (Bedside Monitoring)';
+      default:
+        return '1 Hour Visit';
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Surface(
-      padding: const EdgeInsets.all(14),
-      child: Row(
-        children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
-            child: const Icon(Icons.inventory_2_outlined, color: AppColors.primary, size: 21),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  equipment.name,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w800,
-                    fontSize: 13.5,
-                    color: AppColors.ink,
+    final price = _calculatePrice();
+
+    return Container(
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Drag Handle
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFD1D5DB),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                Text(
-                  '${equipment.category} · ${inr(equipment.perMonth)}/month',
-                  style:
-                      const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+              ),
+              const SizedBox(height: 16),
+
+              // Nurse Profile Header
+              Row(
+                children: [
+                  Container(
+                    width: 44,
+                    height: 44,
+                    alignment: Alignment.center,
+                    decoration: const BoxDecoration(
+                      color: AppColors.primarySoft,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Text(
+                      widget.nurse.name
+                          .trim()
+                          .split(' ')
+                          .map((e) => e.isNotEmpty ? e[0] : '')
+                          .take(2)
+                          .join(),
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                widget.nurse.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                  fontSize: 15,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.verified, color: AppColors.success, size: 14),
+                          ],
+                        ),
+                        Text(
+                          '${widget.nurse.level} · ${widget.nurse.experience} yrs exp · ⭐ ${widget.nurse.rating.toStringAsFixed(1)}',
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              const Divider(height: 1, color: AppColors.border),
+              const SizedBox(height: 14),
+
+              // 1. DURATION SELECTOR
+              const Text(
+                'Select Visit Duration',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'Price dynamically adjusts based on required time and clinical scope',
+                style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+              ),
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _DurationOptionTile(
+                      title: '30 Mins',
+                      subtitle: 'Quick Visit',
+                      price: '₹399',
+                      isSelected: _selectedDuration == '30min',
+                      onTap: () => setState(() => _selectedDuration = '30min'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _DurationOptionTile(
+                      title: '1 Hour',
+                      subtitle: 'Standard Care',
+                      price: '₹699',
+                      isSelected: _selectedDuration == '1hr',
+                      onTap: () => setState(() => _selectedDuration = '1hr'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _DurationOptionTile(
+                      title: '2 Hours',
+                      subtitle: 'Extended Visit',
+                      price: '₹1,199',
+                      isSelected: _selectedDuration == '2hr',
+                      onTap: () => setState(() => _selectedDuration = '2hr'),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: _DurationOptionTile(
+                      title: 'Custom',
+                      subtitle: 'Extended Shifts',
+                      price: '₹1,999+',
+                      isSelected: _selectedDuration == 'custom',
+                      onTap: () => setState(() => _selectedDuration = 'custom'),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Custom hours selector if 'custom' is picked
+              if (_selectedDuration == 'custom') ...[
+                const SizedBox(height: 10),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondary,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    border: Border.all(color: AppColors.border),
+                  ),
+                  child: Row(
+                    children: [
+                      const Text(
+                        'Shift Hours:',
+                        style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(width: 8),
+                      ...[4, 8, 12, 24].map((hours) {
+                        final isHSelected = _customHours == hours;
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 6),
+                          child: InkWell(
+                            onTap: () => setState(() => _customHours = hours),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: isHSelected ? AppColors.primary : Colors.white,
+                                borderRadius: BorderRadius.circular(AppRadius.sm),
+                                border: Border.all(
+                                  color: isHSelected ? AppColors.primary : AppColors.border,
+                                ),
+                              ),
+                              child: Text(
+                                '${hours}h',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.w800,
+                                  color: isHSelected ? Colors.white : AppColors.ink,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
                 ),
               ],
-            ),
+
+              const SizedBox(height: 16),
+
+              // 2. AVAILABILITY SLOT SELECTOR
+              const Text(
+                'Preferred Arrival Time',
+                style: TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 8),
+
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  '⚡ Within 45 mins (Immediate)',
+                  'Today 2:30 PM',
+                  'Today 6:00 PM',
+                  'Tomorrow 9:00 AM',
+                ].map((slot) {
+                  final isSlotSelected = _selectedSlot == slot;
+                  return InkWell(
+                    onTap: () => setState(() => _selectedSlot = slot),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: isSlotSelected ? AppColors.primarySoft : Colors.white,
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                        border: Border.all(
+                          color: isSlotSelected ? AppColors.primary : AppColors.border,
+                          width: isSlotSelected ? 1.4 : 1,
+                        ),
+                      ),
+                      child: Text(
+                        slot,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: isSlotSelected ? FontWeight.w800 : FontWeight.w600,
+                          color: isSlotSelected ? AppColors.primary : AppColors.ink,
+                        ),
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+
+              const SizedBox(height: 18),
+
+              // 3. PRICE SUMMARY & CTA
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppColors.secondary,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(color: AppColors.border),
+                ),
+                child: Row(
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          inr(price),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        Text(
+                          _getDurationLabel(),
+                          style: const TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedForeground,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+                    ElevatedButton(
+                      onPressed: widget.onProceed,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Row(
+                        children: [
+                          Text(
+                            'Confirm & Book',
+                            style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800),
+                          ),
+                          SizedBox(width: 4),
+                          Icon(Icons.arrow_forward_rounded, size: 14),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 10),
-          ElevatedButton(
-            onPressed: onRent,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-              elevation: 0,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              minimumSize: Size.zero,
-            ),
-            child: const Text('Rent', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w800)),
-          ),
-        ],
+        ),
       ),
     );
   }
 }
+
+// Duration Option Tile
+class _DurationOptionTile extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String price;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _DurationOptionTile({
+    required this.title,
+    required this.subtitle,
+    required this.price,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primarySoft : Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+            width: isSelected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w800,
+                color: isSelected ? AppColors.primary : AppColors.ink,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              price,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w900,
+                color: isSelected ? AppColors.primary : const Color(0xFF16A34A),
+              ),
+            ),
+            const SizedBox(height: 1),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 8.5,
+                color: AppColors.mutedForeground,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

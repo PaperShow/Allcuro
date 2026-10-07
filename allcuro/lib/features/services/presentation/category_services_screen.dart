@@ -58,6 +58,14 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
         icon: Icons.elderly_rounded,
         accentColor: Color(0xFFD97706),
       );
+    } else if (k.contains('caregiv')) {
+      return const _CategoryMeta(
+        title: 'Caregivers',
+        badge: 'Compassionate Care',
+        subtitle: 'Bedside assistance, bathing, mobility, feeding & daily companionship',
+        icon: Icons.volunteer_activism_rounded,
+        accentColor: Color(0xFFD97706),
+      );
     } else if (k.contains('physio')) {
       return const _CategoryMeta(
         title: 'Physiotherapy',

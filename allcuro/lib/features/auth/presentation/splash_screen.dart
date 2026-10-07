@@ -51,7 +51,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           break;
         case AuthStatus.unauthenticated:
         case AuthStatus.unknown:
-          context.go('/auth/phone');
+          context.go('/welcome');
           break;
       }
     });

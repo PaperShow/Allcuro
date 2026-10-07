@@ -41,7 +41,7 @@ final GoRouter appRouter = GoRouter(
           if (context.canPop()) {
             context.pop();
           } else {
-            context.go('/');
+            context.go('/welcome');
           }
         },
         onAuthenticated: () => context.go('/onboarding'),

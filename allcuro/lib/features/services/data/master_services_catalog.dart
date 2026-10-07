@@ -899,6 +899,13 @@ class MasterServicesCatalog {
       if (catLower.contains('elder') && m.contains('elder')) {
         return true;
       }
+      if (catLower.contains('caregiv')) {
+        if (s.professional.toLowerCase().contains('caregiver') ||
+            m.contains('elder') ||
+            s.subcategory.toLowerCase().contains('personal care')) {
+          return true;
+        }
+      }
       if (catLower.contains('physio') && m.contains('physio')) {
         return true;
       }

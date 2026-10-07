@@ -4,7 +4,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../data/auth_service.dart';
@@ -89,35 +88,10 @@ class _PhoneAuthScreenState extends ConsumerState<PhoneAuthScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              _BackButton(
-                                onTap: state.step == PhoneAuthStep.otp
-                                    ? notifier.editPhoneNumber
-                                    : widget.onBack,
-                              ),
-                              if (state.step == PhoneAuthStep.phone)
-                                TextButton(
-                                  onPressed: () => context.go('/'),
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: AppColors.primaryForeground,
-                                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                                    side: BorderSide(
-                                      color: AppColors.primaryForeground.withValues(alpha: 0.35),
-                                    ),
-                                    shape: const StadiumBorder(),
-                                  ),
-                                  child: const Text(
-                                    'Skip ➔',
-                                    style: TextStyle(
-                                      fontSize: 12.5,
-                                      fontWeight: FontWeight.w700,
-                                      color: AppColors.primaryForeground,
-                                    ),
-                                  ),
-                                ),
-                            ],
+                          _BackButton(
+                            onTap: state.step == PhoneAuthStep.otp
+                                ? notifier.editPhoneNumber
+                                : widget.onBack,
                           ),
                           const SizedBox(height: 12),
                           Expanded(

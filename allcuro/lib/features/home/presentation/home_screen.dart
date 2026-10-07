@@ -4,15 +4,10 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/ui/app_shell.dart';
-import '../../../core/ui/surface.dart';
-import '../../../core/utils/currency.dart';
 import '../../auth/presentation/auth_view_model.dart';
 import '../../auth/presentation/quick_login_sheet.dart';
 
-import '../../centres/data/models/centre.dart';
-import '../../nurses/data/models/nurse.dart';
 import '../../services/data/master_services_catalog.dart';
-import 'home_view_model.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -47,9 +42,204 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  void _showAdvisorySheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                margin: const EdgeInsets.only(bottom: 16),
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+              ),
+            ),
+            Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFED6C00).withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: const Icon(
+                    Icons.support_agent_rounded,
+                    color: Color(0xFFED6C00),
+                    size: 26,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                const Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Clinical Advisory & Help Desk',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                      Text(
+                        'Speak with an ALLCURO Care Coordinator',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.mutedForeground,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFF7ED),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: const Color(0xFFFED7AA)),
+              ),
+              child: const Row(
+                children: [
+                  Icon(Icons.verified_outlined, color: Color(0xFFED6C00), size: 20),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Our medical team helps you select the exact clinician, shift duration, or medical care required for your loved one.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0xFF7C2D12),
+                        height: 1.35,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 18),
+            InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Connecting to ALLCURO Clinical Helpline (+91 1800-ALLCURO)...'),
+                    backgroundColor: AppColors.primary,
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.phone_in_talk_rounded, color: Colors.white, size: 22),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Call Clinical Coordinator Now',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            '24/7 Free Consultation · Instant Response',
+                            style: TextStyle(
+                              color: Color(0xFFD1FAE5),
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios_rounded, color: Colors.white, size: 14),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              onTap: () {
+                Navigator.pop(ctx);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Opening WhatsApp chat with Care Advisory team...'),
+                    backgroundColor: Color(0xFF25D366),
+                  ),
+                );
+              },
+              child: Container(
+                padding: const EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF0FDF4),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(color: const Color(0xFFBBF7D0)),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.chat_bubble_outline_rounded, color: Color(0xFF16A34A), size: 22),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Chat on WhatsApp',
+                            style: TextStyle(
+                              color: Color(0xFF14532D),
+                              fontWeight: FontWeight.w800,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            'Send prescription or question · Replies in 5 mins',
+                            style: TextStyle(
+                              color: Color(0xFF16A34A),
+                              fontSize: 11,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(Icons.arrow_forward_ios_rounded, color: Color(0xFF16A34A), size: 14),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final homeAsync = ref.watch(homeViewModelProvider);
     final authState = ref.watch(authViewModelProvider);
 
     final isGuest = authState.status == AuthStatus.unauthenticated || authState.status == AuthStatus.unknown;
@@ -263,12 +453,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     icon: Icons.apartment_rounded,
                     onTap: () => context.push('/centres'),
                   ),
-                  // 7. Equipment’s
+                  // 7. Caregivers
                   _HomeGridItem(
-                    title: 'Equipment’s',
-                    imageAsset: 'assets/images/services/equipment.jpg',
-                    icon: Icons.wheelchair_pickup_rounded,
-                    onTap: () => context.push('/equipment'),
+                    title: 'Caregivers',
+                    icon: Icons.volunteer_activism_rounded,
+                    onTap: () => context.push('/category-services/caregiver'),
                   ),
                   // 8. See All
                   _HomeGridItem(
@@ -605,125 +794,129 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
 
-        const SizedBox(height: 24),
-
-          // -----------------------------------------------------------------
-          // 5. TOP VERIFIED NURSES (Curated Section with Degree Badges)
-          // -----------------------------------------------------------------
+          // 4b. TALK TO OUR TEAM ADVISORY BANNER (Directly below Explore Health Care Centres)
+          const SizedBox(height: 12),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Top Verified Nurses',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
-                    ),
-                    Text(
-                      'Degree certified · Police checked · HPR verified',
-                      style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                    ),
-                  ],
-                ),
-                InkWell(
-                  onTap: () => context.push('/nurses'),
-                  child: const Text(
-                    'View all ➔',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.primary),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              onTap: () => _showAdvisorySheet(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                decoration: BoxDecoration(
+                  gradient: const LinearGradient(
+                    colors: [
+                      Color(0xFFFFF7ED),
+                      Color(0xFFFFEDD5),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
                   ),
-                ),
-              ],
-            ),
-          ),
-
-          homeAsync.when(
-            loading: () => const Padding(
-              padding: EdgeInsets.symmetric(vertical: 24),
-              child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
-            ),
-            error: (err, _) => Center(child: Text('Error: $err')),
-            data: (homeData) {
-              final nurses = homeData.nurses;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: nurses.take(3).map((nurse) {
-                    return _NurseCardUrban(
-                      nurse: nurse,
-                      onBook: () {
-                        _handleBookingGuard(() => context.push('/nurse-quick-booking'));
-                      },
-                      onView: () => context.push('/nurses/${nurse.id}'),
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 16),
-
-          // -----------------------------------------------------------------
-          // 6. TOP HOME CARE CENTRES (Curated Section)
-          // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Audited Home Care Centres',
-                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
-                    ),
-                    Text(
-                      '24/7 ICU step-down, elderly care & rehab beds',
-                      style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                    ),
-                  ],
-                ),
-                InkWell(
-                  onTap: () => context.push('/centres'),
-                  child: const Text(
-                    'View all ➔',
-                    style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.primary),
+                  borderRadius: BorderRadius.circular(AppRadius.lg),
+                  border: Border.all(
+                    color: const Color(0xFFFED7AA),
+                    width: 1.2,
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: const Color(0xFFED6C00).withValues(alpha: 0.08),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
                 ),
-              ],
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFED6C00),
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(0xFFED6C00).withValues(alpha: 0.25),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.support_agent_rounded,
+                        color: Colors.white,
+                        size: 26,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Text(
+                                'Talk to Our Team',
+                                style: TextStyle(
+                                  fontSize: 14.5,
+                                  fontWeight: FontWeight.w800,
+                                  color: Color(0xFF9A3412),
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFED6C00),
+                                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                                ),
+                                child: const Text(
+                                  'FREE',
+                                  style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.w900,
+                                    color: Colors.white,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 2),
+                          const Text(
+                            'Need advice or help choosing care? Speak with our clinical coordinators.',
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              color: Color(0xFF7C2D12),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFED6C00).withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.arrow_forward_ios_rounded,
+                        size: 13,
+                        color: Color(0xFFED6C00),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
 
-          homeAsync.when(
-            loading: () => const SizedBox.shrink(),
-            error: (_, _) => const SizedBox.shrink(),
-            data: (homeData) {
-              final centres = homeData.centres;
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  children: centres.take(2).map((centre) {
-                    return _CentreCardUrban(
-                      centre: centre,
-                      onBook: () {
-                        _handleBookingGuard(() => context.push('/centre-booking/${centre.id}'));
-                      },
-                      onView: () => context.push('/centres/${centre.id}'),
-                    );
-                  }).toList(),
-                ),
-              );
-            },
-          ),
-
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
 
           // -----------------------------------------------------------------
-          // 7. MEDICAL EQUIPMENT RENTALS
+          // 5. POPULAR QUICK PROCEDURES AT HOME (30-Min & Hourly Direct Care)
           // -----------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
@@ -734,17 +927,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Medical Equipment On-Rent',
+                      'Popular Procedures at Home',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
                     ),
                     Text(
-                      'Hospital beds, 5L oxygen concentrators & BiPAP',
+                      '30m & 1h visits · Sterile kits · Fast arrival',
                       style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
                     ),
                   ],
                 ),
                 InkWell(
-                  onTap: () => context.push('/equipment'),
+                  onTap: () => context.push('/category-services/nursing'),
                   child: const Text(
                     'View all ➔',
                     style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: AppColors.primary),
@@ -758,24 +951,239 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               children: [
-                _EquipmentCardUrban(
-                  title: 'Philips EverFlo 5L Oxygen Concentrator',
-                  category: 'Respiratory · 93% Oxygen Purity',
-                  monthlyPrice: 4500,
-                  badge: 'Sterilised Delivery',
-                  onRent: () {
-                    _handleBookingGuard(() => context.push('/equipment'));
-                  },
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickProcedureCard(
+                        title: 'Injection & IV Care',
+                        duration: '30 Mins',
+                        icon: Icons.vaccines_rounded,
+                        tag: 'Quick Visit',
+                        onTap: () => context.push('/category-services/nursing'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _QuickProcedureCard(
+                        title: 'Wound Dressing',
+                        duration: '45 Mins',
+                        icon: Icons.healing_rounded,
+                        tag: 'Post-Op / Bedsores',
+                        onTap: () => context.push('/category-services/nursing'),
+                      ),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
-                _EquipmentCardUrban(
-                  title: 'Motorized 5-Function ICU Hospital Bed',
-                  category: 'Hospital Bed with Air Mattress',
-                  monthlyPrice: 6500,
-                  badge: 'Express Dispatch',
-                  onRent: () {
-                    _handleBookingGuard(() => context.push('/equipment'));
-                  },
+                Row(
+                  children: [
+                    Expanded(
+                      child: _QuickProcedureCard(
+                        title: 'Catheter / Tube Care',
+                        duration: '45 Mins',
+                        icon: Icons.medical_services_rounded,
+                        tag: 'Sterile Care',
+                        onTap: () => context.push('/category-services/nursing'),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: _QuickProcedureCard(
+                        title: 'Elderly Caregiver',
+                        duration: '1h / Custom Shift',
+                        icon: Icons.volunteer_activism_rounded,
+                        tag: 'Daily Assistance',
+                        onTap: () => context.push('/category-services/caregiver'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // -----------------------------------------------------------------
+          // 6. HOW HOME CARE WORKS (3 Simple Steps)
+          // -----------------------------------------------------------------
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'How Home Care Works',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
+                ),
+                Text(
+                  'Hospital-standard medical attention in 3 simple steps',
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Container(
+              padding: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppRadius.lg),
+                border: Border.all(color: AppColors.border),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.02),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: const Column(
+                children: [
+                  _HowItWorksStep(
+                    stepNumber: '1',
+                    title: 'Select Service & Duration',
+                    subtitle: 'Choose between 30-min quick visits, hourly attention, or full 12/24-hour shifts.',
+                    icon: Icons.timer_outlined,
+                  ),
+                  Divider(height: 24, thickness: 0.8),
+                  _HowItWorksStep(
+                    stepNumber: '2',
+                    title: 'Verified Clinician Assigned',
+                    subtitle: 'Degree-certified, police-verified nurse or caregiver arrives at your doorstep.',
+                    icon: Icons.verified_user_outlined,
+                  ),
+                  Divider(height: 24, thickness: 0.8),
+                  _HowItWorksStep(
+                    stepNumber: '3',
+                    title: 'Supervised Care at Home',
+                    subtitle: 'Real-time vitals logging and 24/7 senior medical supervisor support.',
+                    icon: Icons.health_and_safety_outlined,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // -----------------------------------------------------------------
+          // 7. WHY FAMILIES TRUST ALLCURO (Trust & Safety Guarantees)
+          // -----------------------------------------------------------------
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Why Families Trust ALLCURO',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
+                ),
+                Text(
+                  'Clinical excellence, patient dignity, and rigorous safety protocols',
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: const [
+                Row(
+                  children: [
+                    Expanded(
+                      child: _WhyTrustCard(
+                        icon: Icons.shield_rounded,
+                        iconColor: Color(0xFF10B981),
+                        title: '100% Verified',
+                        subtitle: 'Police & State Nursing Council verified credentials',
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: _WhyTrustCard(
+                        icon: Icons.access_time_filled_rounded,
+                        iconColor: Color(0xFF0284C7),
+                        title: 'Flexible Slots',
+                        subtitle: '30 min quick care, custom hours, or full shifts',
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _WhyTrustCard(
+                        icon: Icons.payments_rounded,
+                        iconColor: Color(0xFFED6C00),
+                        title: 'Transparent Pricing',
+                        subtitle: 'Standardized rates with zero hidden hospital markups',
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: _WhyTrustCard(
+                        icon: Icons.medical_services_rounded,
+                        iconColor: Color(0xFF8B5CF6),
+                        title: 'Clinical Oversight',
+                        subtitle: 'Continuous doctor & nursing supervisor on call',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 24),
+
+          // -----------------------------------------------------------------
+          // 8. FREQUENTLY ASKED QUESTIONS
+          // -----------------------------------------------------------------
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Frequently Asked Questions',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
+                ),
+                Text(
+                  'Everything you need to know about home health care',
+                  style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
+                ),
+              ],
+            ),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: const [
+                _FaqTile(
+                  question: 'Can I book a nurse for just 30 minutes?',
+                  answer: 'Yes! For procedures like IV injections, wound dressing, or catheterization, you can book a 30-minute or 45-minute quick visit without paying for a full shift.',
+                ),
+                SizedBox(height: 8),
+                _FaqTile(
+                  question: 'How quickly can a clinician reach my home?',
+                  answer: 'Our verified clinicians are stationed across primary city sectors. For urgent requirements, an available clinician can reach your doorstep within 45 to 60 minutes.',
+                ),
+                SizedBox(height: 8),
+                _FaqTile(
+                  question: 'Are caregivers different from registered nurses?',
+                  answer: 'Yes. Registered nurses hold B.Sc or GNM degrees for clinical procedures, injections, and post-op care. Caregivers assist with daily living activities, mobility, and companionship.',
+                ),
+                SizedBox(height: 8),
+                _FaqTile(
+                  question: 'Can I replace or reschedule if needed?',
+                  answer: 'Yes. You can reschedule easily or request clinician replacement through our 24/7 care support desk with zero penalty.',
                 ),
               ],
             ),
@@ -968,137 +1376,94 @@ class _HomeGridItem extends StatelessWidget {
 
 
 // ---------------------------------------------------------------------------
-// TOP NURSE CARD COMPONENT (With Degree Tagging)
+// QUICK PROCEDURE CARD
 // ---------------------------------------------------------------------------
-class _NurseCardUrban extends StatelessWidget {
-  final Nurse nurse;
-  final VoidCallback onBook;
-  final VoidCallback onView;
+class _QuickProcedureCard extends StatelessWidget {
+  final String title;
+  final String duration;
+  final IconData icon;
+  final String tag;
+  final VoidCallback onTap;
 
-  const _NurseCardUrban({
-    required this.nurse,
-    required this.onBook,
-    required this.onView,
+  const _QuickProcedureCard({
+    required this.title,
+    required this.duration,
+    required this.icon,
+    required this.tag,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final shiftPrice = nurse.shifts.isNotEmpty ? nurse.shifts.first.price : 600;
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Surface(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: Container(
         padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: AppColors.border),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.02),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Nurse Avatar
                 Container(
-                  width: 48,
-                  height: 48,
+                  width: 36,
+                  height: 36,
                   alignment: Alignment.center,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     color: AppColors.primarySoft,
-                    shape: BoxShape.circle,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(icon, color: AppColors.primary, size: 20),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF1F5F9),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
                   ),
                   child: Text(
-                    nurse.name.split(' ').map((e) => e.isNotEmpty ? e[0] : '').take(2).join(),
-                    style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: AppColors.primary),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                nurse.name,
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 14, color: AppColors.ink),
-                              ),
-                              const SizedBox(width: 4),
-                              const Icon(Icons.verified, color: AppColors.success, size: 14),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 15),
-                              const SizedBox(width: 2),
-                              Text(
-                                '${nurse.rating}',
-                                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12, color: AppColors.ink),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 2),
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                            decoration: BoxDecoration(
-                              color: AppColors.primarySoft,
-                              borderRadius: BorderRadius.circular(AppRadius.sm),
-                            ),
-                            child: Text(
-                              nurse.level,
-                              style: const TextStyle(fontSize: 9.5, fontWeight: FontWeight.w800, color: AppColors.primary),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            '${nurse.experience} yrs exp · ${nurse.city}',
-                            style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                          ),
-                        ],
-                      ),
-                    ],
+                    duration,
+                    style: const TextStyle(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFF475569),
+                    ),
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${inr(shiftPrice)} / visit',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
-                ),
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: onView,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.border),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-                      ),
-                      child: const Text('View Profile', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: onBook,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-                        elevation: 0,
-                      ),
-                      child: const Text('Book Now', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
-                    ),
-                  ],
-                ),
-              ],
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w800,
+                color: AppColors.ink,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              tag,
+              style: const TextStyle(
+                fontSize: 10.5,
+                color: AppColors.mutedForeground,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -1108,184 +1473,194 @@ class _NurseCardUrban extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// CENTRE CARD COMPONENT
+// HOW IT WORKS STEP
 // ---------------------------------------------------------------------------
-class _CentreCardUrban extends StatelessWidget {
-  final Centre centre;
-  final VoidCallback onBook;
-  final VoidCallback onView;
-
-  const _CentreCardUrban({
-    required this.centre,
-    required this.onBook,
-    required this.onView,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Surface(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 44,
-                  height: 44,
-                  alignment: Alignment.center,
-                  decoration: const BoxDecoration(color: AppColors.primarySoft, shape: BoxShape.circle),
-                  child: const Icon(Icons.apartment_rounded, color: AppColors.primary, size: 24),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            centre.name,
-                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13.5, color: AppColors.ink),
-                          ),
-                          Row(
-                            children: [
-                              const Icon(Icons.star_rounded, color: Color(0xFFF59E0B), size: 15),
-                              const SizedBox(width: 2),
-                              Text('${centre.rating}', style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 12)),
-                            ],
-                          ),
-                        ],
-                      ),
-                      Text(
-                        '${centre.locality} · ${centre.staffRatio} Nurse Ratio',
-                        style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  '${inr(centre.pricePerDay)} / day',
-                  style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w800, color: AppColors.ink),
-                ),
-                Row(
-                  children: [
-                    OutlinedButton(
-                      onPressed: onView,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.primary,
-                        side: const BorderSide(color: AppColors.border),
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-                      ),
-                      child: const Text('Facility Tour', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w700)),
-                    ),
-                    const SizedBox(width: 8),
-                    ElevatedButton(
-                      onPressed: onBook,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-                        elevation: 0,
-                      ),
-                      child: const Text('Book Stay', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// EQUIPMENT CARD COMPONENT
-// ---------------------------------------------------------------------------
-class _EquipmentCardUrban extends StatelessWidget {
+class _HowItWorksStep extends StatelessWidget {
+  final String stepNumber;
   final String title;
-  final String category;
-  final int monthlyPrice;
-  final String badge;
-  final VoidCallback onRent;
+  final String subtitle;
+  final IconData icon;
 
-  const _EquipmentCardUrban({
+  const _HowItWorksStep({
+    required this.stepNumber,
     required this.title,
-    required this.category,
-    required this.monthlyPrice,
-    required this.badge,
-    required this.onRent,
+    required this.subtitle,
+    required this.icon,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Surface(
-      padding: const EdgeInsets.all(14),
-      child: Row(
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 34,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.primarySoft,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+          ),
+          child: Text(
+            stepNumber,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w900,
+              color: AppColors.primary,
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.ink,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 11,
+                  color: AppColors.mutedForeground,
+                  height: 1.35,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// WHY TRUST US CARD
+// ---------------------------------------------------------------------------
+class _WhyTrustCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+
+  const _WhyTrustCard({
+    required this.icon,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            alignment: Alignment.center,
-            decoration: const BoxDecoration(color: AppColors.secondary, shape: BoxShape.circle),
-            child: const Icon(Icons.inventory_2_outlined, color: AppColors.primary, size: 22),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 13, color: AppColors.ink)),
-                const SizedBox(height: 2),
-                Text('$category · ${inr(monthlyPrice)}/mo', style: const TextStyle(fontSize: 11, color: AppColors.mutedForeground)),
-                if (badge.isNotEmpty) ...[
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                    decoration: BoxDecoration(
-                      color: AppColors.secondaryAccentSoft,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                      border: Border.all(color: AppColors.secondaryAccentBorder, width: 0.8),
-                    ),
-                    child: Text(
-                      badge,
-                      style: const TextStyle(
-                        fontSize: 9.5,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.secondaryAccent,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
+          Icon(icon, color: iconColor, size: 22),
+          const SizedBox(height: 6),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w800,
+              color: AppColors.ink,
             ),
           ),
-          const SizedBox(width: 8),
-          ElevatedButton(
-            onPressed: onRent,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppRadius.md)),
-              elevation: 0,
+          const SizedBox(height: 2),
+          Text(
+            subtitle,
+            style: const TextStyle(
+              fontSize: 10.5,
+              color: AppColors.mutedForeground,
+              height: 1.3,
             ),
-            child: const Text('Rent', style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800)),
           ),
         ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// FAQ EXPANDABLE TILE
+// ---------------------------------------------------------------------------
+class _FaqTile extends StatefulWidget {
+  final String question;
+  final String answer;
+
+  const _FaqTile({
+    required this.question,
+    required this.answer,
+  });
+
+  @override
+  State<_FaqTile> createState() => _FaqTileState();
+}
+
+class _FaqTileState extends State<_FaqTile> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: () => setState(() => _expanded = !_expanded),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      widget.question,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                  ),
+                  Icon(
+                    _expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                    size: 18,
+                    color: AppColors.mutedForeground,
+                  ),
+                ],
+              ),
+              if (_expanded) ...[
+                const SizedBox(height: 8),
+                Text(
+                  widget.answer,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    color: Color(0xFF475569),
+                    height: 1.4,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
       ),
     );
   }
