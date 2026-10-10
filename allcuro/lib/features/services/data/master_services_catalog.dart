@@ -13,7 +13,6 @@ class MasterServiceItem {
   final String price;
   final String notes;
   final IconData icon;
-  final String? imageAsset;
   final String badge;
 
   const MasterServiceItem({
@@ -29,7 +28,6 @@ class MasterServiceItem {
     required this.price,
     required this.notes,
     required this.icon,
-    this.imageAsset,
     this.badge = '',
   });
 }
@@ -51,7 +49,6 @@ class MasterServicesCatalog {
       price: '₹499',
       notes: 'Products extra',
       icon: Icons.bathtub_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -67,7 +64,6 @@ class MasterServicesCatalog {
       price: '₹449',
       notes: '—',
       icon: Icons.bathtub_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -83,7 +79,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: '—',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -99,7 +94,6 @@ class MasterServicesCatalog {
       price: '₹249',
       notes: 'Diaper extra',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -115,7 +109,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: 'Products extra',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -131,7 +124,6 @@ class MasterServicesCatalog {
       price: '₹349',
       notes: '—',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -147,7 +139,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: '—',
       icon: Icons.accessibility_new_rounded,
-      imageAsset: 'assets/images/services/physiotherapy.jpg',
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -163,7 +154,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: '—',
       icon: Icons.people_alt_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -179,7 +169,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: '—',
       icon: Icons.alarm_on_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -195,7 +184,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: '—',
       icon: Icons.monitor_heart_rounded,
-      imageAsset: 'assets/images/services/vital_monitoring.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -211,7 +199,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: 'Strip/lancet extra',
       icon: Icons.monitor_heart_rounded,
-      imageAsset: 'assets/images/services/vital_monitoring.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -227,7 +214,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.psychology_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -243,7 +229,6 @@ class MasterServicesCatalog {
       price: '₹699+',
       notes: 'Case dependent',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -259,7 +244,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: 'Popular',
     ),
     MasterServiceItem(
@@ -275,7 +259,6 @@ class MasterServicesCatalog {
       price: '₹499',
       notes: 'Medicine/consumables extra',
       icon: Icons.vaccines_rounded,
-      imageAsset: 'assets/images/services/injection.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -291,7 +274,6 @@ class MasterServicesCatalog {
       price: '₹999+',
       notes: 'Medicine/consumables extra',
       icon: Icons.water_drop_rounded,
-      imageAsset: 'assets/images/services/iv_care.jpg',
       badge: 'High Skill',
     ),
     MasterServiceItem(
@@ -307,7 +289,6 @@ class MasterServicesCatalog {
       price: '₹999+',
       notes: 'Medicine/consumables extra',
       icon: Icons.water_drop_rounded,
-      imageAsset: 'assets/images/services/iv_care.jpg',
       badge: 'High Skill',
     ),
     MasterServiceItem(
@@ -323,7 +304,6 @@ class MasterServicesCatalog {
       price: '₹699–999',
       notes: 'Materials extra',
       icon: Icons.healing_rounded,
-      imageAsset: 'assets/images/services/wound_dressing.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -339,7 +319,6 @@ class MasterServicesCatalog {
       price: '₹899–1,299',
       notes: 'Materials extra',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -355,7 +334,6 @@ class MasterServicesCatalog {
       price: '₹599',
       notes: 'Materials extra',
       icon: Icons.medical_services_rounded,
-      imageAsset: 'assets/images/services/catheter_care.jpg',
       badge: 'High Skill',
     ),
     MasterServiceItem(
@@ -371,7 +349,6 @@ class MasterServicesCatalog {
       price: '₹999',
       notes: 'Kit extra',
       icon: Icons.medical_services_rounded,
-      imageAsset: 'assets/images/services/catheter_care.jpg',
       badge: 'High Skill',
     ),
     MasterServiceItem(
@@ -387,7 +364,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: 'Materials extra',
       icon: Icons.medication_liquid_rounded,
-      imageAsset: 'assets/images/services/ryles_tube.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -403,7 +379,6 @@ class MasterServicesCatalog {
       price: '₹1,199',
       notes: 'Tube/materials extra',
       icon: Icons.medication_liquid_rounded,
-      imageAsset: 'assets/images/services/ryles_tube.jpg',
       badge: 'Advanced',
     ),
     MasterServiceItem(
@@ -419,7 +394,6 @@ class MasterServicesCatalog {
       price: '₹599',
       notes: 'Materials extra',
       icon: Icons.healing_rounded,
-      imageAsset: 'assets/images/services/wound_dressing.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -435,7 +409,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: 'Medicine extra',
       icon: Icons.air_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -451,7 +424,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.biotech_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -467,7 +439,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: 'Lab charges extra',
       icon: Icons.biotech_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -483,7 +454,6 @@ class MasterServicesCatalog {
       price: '₹999+',
       notes: 'Materials extra',
       icon: Icons.masks_rounded,
-      imageAsset: 'assets/images/services/tracheostomy.jpg',
       badge: 'Advanced',
     ),
     MasterServiceItem(
@@ -499,7 +469,6 @@ class MasterServicesCatalog {
       price: '₹799+',
       notes: 'Consumables extra',
       icon: Icons.air_rounded,
-      imageAsset: null,
       badge: 'Advanced',
     ),
     MasterServiceItem(
@@ -515,7 +484,6 @@ class MasterServicesCatalog {
       price: '₹899+',
       notes: 'Pouch/materials extra',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: 'Advanced',
     ),
     MasterServiceItem(
@@ -531,7 +499,6 @@ class MasterServicesCatalog {
       price: '₹799',
       notes: '—',
       icon: Icons.accessibility_new_rounded,
-      imageAsset: 'assets/images/services/physiotherapy.jpg',
       badge: 'Popular',
     ),
     MasterServiceItem(
@@ -547,7 +514,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.accessibility_new_rounded,
-      imageAsset: 'assets/images/services/physiotherapy.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -563,7 +529,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.accessibility_new_rounded,
-      imageAsset: 'assets/images/services/physiotherapy.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -579,7 +544,6 @@ class MasterServicesCatalog {
       price: '₹899',
       notes: '—',
       icon: Icons.accessibility_new_rounded,
-      imageAsset: 'assets/images/services/physiotherapy.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -595,7 +559,6 @@ class MasterServicesCatalog {
       price: '₹1,299+',
       notes: '—',
       icon: Icons.medical_information_rounded,
-      imageAsset: 'assets/images/services/doctor_visit.jpg',
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -611,7 +574,6 @@ class MasterServicesCatalog {
       price: '₹1,499+',
       notes: '—',
       icon: Icons.medical_information_rounded,
-      imageAsset: 'assets/images/services/doctor_visit.jpg',
       badge: 'Advanced',
     ),
     MasterServiceItem(
@@ -627,7 +589,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.restaurant_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -643,7 +604,6 @@ class MasterServicesCatalog {
       price: '₹799–999',
       notes: '—',
       icon: Icons.restaurant_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -659,7 +619,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: 'Popular',
     ),
     MasterServiceItem(
@@ -675,7 +634,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: '—',
       icon: Icons.monitor_heart_rounded,
-      imageAsset: 'assets/images/services/vital_monitoring.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -691,7 +649,6 @@ class MasterServicesCatalog {
       price: '₹499',
       notes: '—',
       icon: Icons.monitor_heart_rounded,
-      imageAsset: 'assets/images/services/vital_monitoring.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -707,7 +664,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -723,7 +679,6 @@ class MasterServicesCatalog {
       price: '₹799',
       notes: 'Materials extra',
       icon: Icons.healing_rounded,
-      imageAsset: 'assets/images/services/wound_dressing.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -739,7 +694,6 @@ class MasterServicesCatalog {
       price: '₹799',
       notes: '—',
       icon: Icons.medical_services_outlined,
-      imageAsset: 'assets/images/services/nursing_services.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -755,7 +709,6 @@ class MasterServicesCatalog {
       price: '₹499',
       notes: '—',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -771,7 +724,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: 'Popular',
     ),
     MasterServiceItem(
@@ -787,7 +739,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: 'Products extra',
       icon: Icons.bathtub_rounded,
-      imageAsset: null,
       badge: '',
     ),
     MasterServiceItem(
@@ -803,7 +754,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: 'Diapers/products extra',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -819,7 +769,6 @@ class MasterServicesCatalog {
       price: '₹399',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -835,7 +784,6 @@ class MasterServicesCatalog {
       price: '₹349',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: '',
     ),
     MasterServiceItem(
@@ -851,7 +799,6 @@ class MasterServicesCatalog {
       price: '₹299',
       notes: 'Products extra',
       icon: Icons.clean_hands_rounded,
-      imageAsset: null,
       badge: 'Value',
     ),
     MasterServiceItem(
@@ -867,7 +814,6 @@ class MasterServicesCatalog {
       price: '₹699',
       notes: '—',
       icon: Icons.child_care_rounded,
-      imageAsset: 'assets/images/services/baby_care.jpg',
       badge: '',
     ),
   ];

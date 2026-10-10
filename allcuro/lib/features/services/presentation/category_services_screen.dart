@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/ui/app_shell.dart';
+import '../../../core/ui/care_icon.dart';
 import '../data/master_services_catalog.dart';
 
 /// Dynamic Category Services Screen displaying all services belonging to a care category
@@ -22,15 +23,7 @@ class CategoryServicesScreen extends ConsumerStatefulWidget {
 }
 
 class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen> {
-  final TextEditingController _searchController = TextEditingController();
-  String _searchQuery = '';
   String _selectedSubcategory = 'All';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
 
   _CategoryMeta _getCategoryMeta(String key) {
     final k = key.toLowerCase().trim();
@@ -117,16 +110,9 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
     // Extract unique subcategories
     final subcategories = ['All', ...allCategoryServices.map((s) => s.subcategory).toSet()];
 
-    // Filter by subcategory and search query
-    final filteredServices = allCategoryServices.where((s) {
-      final matchesSub = _selectedSubcategory == 'All' || s.subcategory == _selectedSubcategory;
-      final matchesSearch = _searchQuery.isEmpty ||
-          s.name.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          s.description.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          s.includes.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-          s.subcategory.toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesSub && matchesSearch;
-    }).toList();
+    final filteredServices = allCategoryServices
+        .where((s) => _selectedSubcategory == 'All' || s.subcategory == _selectedSubcategory)
+        .toList();
 
     return AppShell(
       currentPath: '/category-services/${widget.category}',
@@ -217,51 +203,10 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
             ),
           ),
 
-          // -----------------------------------------------------------------
-          // 2. SEARCH BAR
-          // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 10),
-            child: Container(
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.card,
-                border: Border.all(color: AppColors.border),
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 4,
-                    offset: const Offset(0, 1),
-                  ),
-                ],
-              ),
-              child: TextField(
-                controller: _searchController,
-                onChanged: (val) => setState(() => _searchQuery = val),
-                style: const TextStyle(fontSize: 13, color: AppColors.ink),
-                decoration: InputDecoration(
-                  hintText: 'Search ${meta.title.toLowerCase()}...',
-                  hintStyle: const TextStyle(fontSize: 12.5, color: AppColors.mutedForeground),
-                  prefixIcon: const Icon(Icons.search_rounded, size: 18, color: AppColors.mutedForeground),
-                  suffixIcon: _searchQuery.isNotEmpty
-                      ? IconButton(
-                          icon: const Icon(Icons.clear, size: 16),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() => _searchQuery = '');
-                          },
-                        )
-                      : null,
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
-                ),
-              ),
-            ),
-          ),
+          const SizedBox(height: 8),
 
           // -----------------------------------------------------------------
-          // 3. SUBCATEGORY PILL TABS (if multiple)
+          // 2. SUBCATEGORY PILL TABS (if multiple)
           // -----------------------------------------------------------------
           if (subcategories.length > 2) ...[
             SizedBox(
@@ -303,30 +248,8 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
           ],
 
           // -----------------------------------------------------------------
-          // 4. GRID STRUCTURE: SERVICES
+          // 3. GRID STRUCTURE: SERVICES
           // -----------------------------------------------------------------
-          if (filteredServices.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
-              child: Center(
-                child: Column(
-                  children: [
-                    const Icon(Icons.search_off_rounded, size: 40, color: AppColors.mutedForeground),
-                    const SizedBox(height: 10),
-                    Text(
-                      'No services found matching "$_searchQuery"',
-                      style: const TextStyle(fontWeight: FontWeight.w700, color: AppColors.ink),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Try searching for another procedure or clear filters',
-                      style: TextStyle(fontSize: 12, color: AppColors.mutedForeground),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: GridView.builder(
@@ -335,7 +258,7 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
                 padding: EdgeInsets.zero,
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
-                  childAspectRatio: 0.62,
+                  childAspectRatio: 0.72,
                   crossAxisSpacing: 8,
                   mainAxisSpacing: 12,
                 ),
@@ -355,7 +278,7 @@ class _CategoryServicesScreenState extends ConsumerState<CategoryServicesScreen>
           const SizedBox(height: 24),
 
           // -----------------------------------------------------------------
-          // 5. HELPDESK & CALL SUPPORT BANNER
+          // 4. HELPDESK & CALL SUPPORT BANNER
           // -----------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -445,42 +368,9 @@ class _CategoryServiceGridTile extends StatelessWidget {
           Stack(
             clipBehavior: Clip.none,
             children: [
-              Container(
-                width: 72,
-                height: 68,
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: const Color(0xFFE5E7EB), width: 1),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.03),
-                      blurRadius: 5,
-                      offset: const Offset(0, 1.5),
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: service.imageAsset != null
-                      ? Image.asset(
-                          service.imageAsset!,
-                          fit: BoxFit.contain,
-                          cacheWidth: 150,
-                          cacheHeight: 150,
-                          filterQuality: FilterQuality.medium,
-                          errorBuilder: (_, _, _) => Icon(
-                            service.icon,
-                            size: 28,
-                            color: AppColors.primary,
-                          ),
-                        )
-                      : Icon(
-                          service.icon,
-                          size: 28,
-                          color: AppColors.primary,
-                        ),
-                ),
+              CareIconTile(
+                asset: CareIcons.forService(service.id),
+                tone: CareTone.forCategory(service.mainCategory),
               ),
 
               // Micro Badge if available (e.g. Popular, Advanced, Value)

@@ -41,6 +41,7 @@ dependencies:
   freezed_annotation:
   json_annotation: 
   shared_preferences: 
+  flutter_svg: ^2.3.0
 
 dev_dependencies:
   flutter_test:
@@ -71,6 +72,8 @@ flutter:
   assets:
     - assets/images/
     - assets/images/services/
+    - assets/icons/care/
+    - assets/illustrations/
   # assets:
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

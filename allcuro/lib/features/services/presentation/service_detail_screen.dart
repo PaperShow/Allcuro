@@ -23,8 +23,6 @@ class ServiceDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen> {
-  bool _proceduresExpanded = false;
-
   // Cached nurses future so it doesn't re-trigger on every rebuild
   Future<List<Nurse>>? _nursesFuture;
 
@@ -63,12 +61,11 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen> {
     final serviceDuration = masterService?.duration ?? '30–45 min';
     final serviceProfessional = masterService?.professional ?? fallbackCat.requiredDegree;
     final serviceNotes = masterService?.notes;
-    final serviceNotIncluded = masterService?.notIncluded;
 
     final List<String> proceduresList = masterService != null
         ? masterService.includes
             .split(';')
-            .map((e) => e.trim())
+            .map((e) => e.trim().replaceAll(RegExp(r'\.$'), ''))
             .where((e) => e.isNotEmpty)
             .toList()
         : fallbackCat.procedures;
@@ -140,306 +137,138 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen> {
           ),
         ),
       ),
-      child: Column(
-        children: [
-          // -----------------------------------------------------------------
-          // 1. HEADER: BACK + TITLE + DESCRIPTION + PROCEDURES ACCORDION
-          // -----------------------------------------------------------------
-          Container(
-            padding: const EdgeInsets.fromLTRB(16, 14, 16, 0),
-            decoration: const BoxDecoration(
-              color: AppColors.secondary,
-              border: Border(bottom: BorderSide(color: AppColors.border)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Back row
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        if (context.canPop()) {
-                          context.pop();
-                        } else {
-                          context.go('/');
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(AppRadius.pill),
-                      child: Container(
-                        padding: const EdgeInsets.all(7),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: AppColors.border),
-                        ),
-                        child: const Icon(
-                          Icons.arrow_back_rounded,
-                          size: 18,
-                          color: AppColors.ink,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            serviceName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w800,
-                              color: AppColors.ink,
-                            ),
-                          ),
-                          Text(
-                            '$serviceDuration · $serviceProfessional',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              color: AppColors.mutedForeground,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    // Price badge
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.primarySoft,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                      ),
-                      child: Text(
-                        servicePrice,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  serviceDesc,
-                  style: const TextStyle(
-                    fontSize: 12.5,
-                    height: 1.45,
-                    color: AppColors.mutedForeground,
-                  ),
-                ),
-                const SizedBox(height: 10),
+      child: FutureBuilder<List<Nurse>>(
+        future: _nursesFuture,
+        builder: (context, snapshot) {
+          final degreeFilters = fallbackCat.nurseDegreeFilters;
+          final all = snapshot.data ?? const <Nurse>[];
+          final filtered = all.where((n) {
+            if (degreeFilters.isEmpty) return true;
+            return degreeFilters.any((f) =>
+                n.level.toLowerCase().contains(f.toLowerCase()) ||
+                n.tags.any((t) => t.toLowerCase().contains(f.toLowerCase())));
+          }).toList();
+          final nurses = filtered.isNotEmpty ? filtered : all;
 
-                // ── Procedures & Inclusions accordion ──────────────────────
-                GestureDetector(
-                  onTap: () => setState(() => _proceduresExpanded = !_proceduresExpanded),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
-                    decoration: BoxDecoration(
-                      color: AppColors.primarySoft,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                    ),
-                    child: Row(
+          return ListView(
+            padding: const EdgeInsets.only(bottom: 24),
+            physics: const BouncingScrollPhysics(),
+            children: [
+              // ---------------------------------------------------------------
+              // 1. HEADER: BACK + TITLE + DESCRIPTION + WHAT'S INCLUDED
+              // ---------------------------------------------------------------
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 14, 16, 16),
+                decoration: const BoxDecoration(
+                  color: AppColors.secondary,
+                  border: Border(bottom: BorderSide(color: AppColors.border)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        const Icon(
-                          Icons.check_circle_outline_rounded,
-                          size: 15,
-                          color: AppColors.primary,
+                        InkWell(
+                          onTap: () {
+                            if (context.canPop()) {
+                              context.pop();
+                            } else {
+                              context.go('/');
+                            }
+                          },
+                          borderRadius: BorderRadius.circular(AppRadius.pill),
+                          child: Container(
+                            padding: const EdgeInsets.all(7),
+                            decoration: BoxDecoration(
+                              color: AppColors.card,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: AppColors.border),
+                            ),
+                            child: const Icon(Icons.arrow_back_rounded, size: 18, color: AppColors.ink),
+                          ),
                         ),
-                        const SizedBox(width: 7),
-                        const Expanded(
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                serviceName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w800,
+                                  color: AppColors.ink,
+                                ),
+                              ),
+                              Text(
+                                '$serviceDuration · $serviceProfessional',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 11,
+                                  color: AppColors.mutedForeground,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.primarySoft,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
                           child: Text(
-                            'What\'s Included in this Visit',
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              fontWeight: FontWeight.w700,
+                            servicePrice,
+                            style: const TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
                               color: AppColors.primary,
                             ),
                           ),
                         ),
-                        Icon(
-                          _proceduresExpanded
-                              ? Icons.keyboard_arrow_up_rounded
-                              : Icons.keyboard_arrow_down_rounded,
-                          size: 18,
-                          color: AppColors.primary,
-                        ),
                       ],
                     ),
-                  ),
-                ),
-                if (_proceduresExpanded) ...[
-                  const SizedBox(height: 6),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.card,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ...proceduresList.map((proc) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 3),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 1),
-                                  child: Icon(
-                                    Icons.check_circle_rounded,
-                                    size: 13,
-                                    color: AppColors.success,
-                                  ),
-                                ),
-                                const SizedBox(width: 7),
-                                Expanded(
-                                  child: Text(
-                                    proc,
-                                    style: const TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: AppColors.ink,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        if (serviceNotIncluded != null &&
-                            serviceNotIncluded.isNotEmpty &&
-                            serviceNotIncluded != '—') ...[
-                          const SizedBox(height: 8),
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: AppColors.secondary,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Row(
-                              children: [
-                                const Icon(Icons.info_outline, size: 14, color: AppColors.mutedForeground),
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    'Excludes: $serviceNotIncluded',
-                                    style: const TextStyle(
-                                      fontSize: 11,
-                                      color: AppColors.mutedForeground,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                        if (serviceNotes != null &&
-                            serviceNotes.isNotEmpty &&
-                            serviceNotes != '—') ...[
-                          const SizedBox(height: 6),
-                          Text(
-                            'Note: $serviceNotes',
-                            style: const TextStyle(
-                              fontSize: 11,
-                              fontStyle: FontStyle.italic,
-                              color: AppColors.mutedForeground,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-                const SizedBox(height: 10),
-
-                const SizedBox(height: 12),
-
-                // ── Nurse Section Header ────────────────────────────────
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.verified_user_rounded,
-                      size: 16,
-                      color: AppColors.primary,
-                    ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Available Certified Nurses & Clinicians',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w800,
-                        color: AppColors.ink,
+                    const SizedBox(height: 10),
+                    Text(
+                      serviceDesc,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        height: 1.45,
+                        color: AppColors.mutedForeground,
                       ),
                     ),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2.5),
-                      decoration: BoxDecoration(
-                        color: AppColors.primarySoft,
-                        borderRadius: BorderRadius.circular(AppRadius.pill),
-                      ),
-                      child: const Text(
-                        'Verified · On-Duty',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
+                    const SizedBox(height: 14),
+                    _IncludedCard(items: proceduresList, note: serviceNotes),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
 
-          // -----------------------------------------------------------------
-          // 2. DIRECT NURSES LIST (No tabs for centres/equipment)
-          // -----------------------------------------------------------------
-          Expanded(
-            child: FutureBuilder<List<Nurse>>(
-              future: _nursesFuture,
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(color: AppColors.primary),
-                  );
-                }
-                final all = snapshot.data!;
-                final degreeFilters = fallbackCat.nurseDegreeFilters;
-                final filtered = all.where((n) {
-                  if (degreeFilters.isEmpty) return true;
-                  return degreeFilters.any((f) =>
-                      n.level.toLowerCase().contains(f.toLowerCase()) ||
-                      n.tags.any((t) => t.toLowerCase().contains(f.toLowerCase())));
-                }).toList();
-                final nurses = filtered.isNotEmpty ? filtered : all;
-                return ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 24),
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: nurses.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (context, i) => _NurseCard(
-                    nurse: nurses[i],
-                    onView: () => context.push('/nurses/${nurses[i].id}'),
-                    onBookOrSlot: () {
-                      _showSlotBookingSheet(context, nurses[i], serviceName);
-                    },
+              // ---------------------------------------------------------------
+              // 2. NURSES LIST
+              // ---------------------------------------------------------------
+              if (!snapshot.hasData)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 40),
+                  child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                )
+              else
+                for (final nurse in nurses)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+                    child: _NurseCard(
+                      nurse: nurse,
+                      onView: () => context.push('/nurses/${nurse.id}'),
+                      onBookOrSlot: () => _showSlotBookingSheet(context, nurse, serviceName),
+                    ),
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }
@@ -459,6 +288,58 @@ class _ServiceDetailScreenState extends ConsumerState<ServiceDetailScreen> {
           });
         },
       ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// WHAT'S INCLUDED (always visible, plain checklist)
+// ─────────────────────────────────────────────────────────────────────────────
+class _IncludedCard extends StatelessWidget {
+  final List<String> items;
+  final String? note;
+
+  const _IncludedCard({required this.items, this.note});
+
+  @override
+  Widget build(BuildContext context) {
+    final hasNote = note != null && note!.isNotEmpty && note != '—';
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "What's included",
+          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.ink),
+        ),
+        const SizedBox(height: 6),
+        for (final item in items)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(top: 1),
+                  child: Icon(Icons.check_rounded, size: 15, color: AppColors.primary),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    item.isEmpty ? item : item[0].toUpperCase() + item.substring(1),
+                    style: const TextStyle(fontSize: 12.5, height: 1.35, color: AppColors.ink),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        if (hasNote) ...[
+          const SizedBox(height: 6),
+          Text(
+            note!,
+            style: const TextStyle(fontSize: 11.5, color: AppColors.mutedForeground),
+          ),
+        ],
+      ],
     );
   }
 }
@@ -565,27 +446,34 @@ class _NurseCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                children: [
-                  Container(
-                    width: 7,
-                    height: 7,
-                    decoration: const BoxDecoration(
-                      color: AppColors.success,
-                      shape: BoxShape.circle,
+              Expanded(
+                child: Row(
+                  children: [
+                    Container(
+                      width: 7,
+                      height: 7,
+                      decoration: const BoxDecoration(
+                        color: AppColors.success,
+                        shape: BoxShape.circle,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 5),
-                  const Text(
-                    'Available Today · 30m, 1h, custom',
-                    style: TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.success,
+                    const SizedBox(width: 5),
+                    const Flexible(
+                      child: Text(
+                        'Available today',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.success,
+                        ),
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
+              const SizedBox(width: 8),
               Row(
                 children: [
                   OutlinedButton(

@@ -16,6 +16,7 @@ import '../features/nurses/presentation/nurse_detail/nurse_detail_screen.dart';
 import '../features/nurses/presentation/nurses_list/nurses_list_screen.dart';
 import '../features/nurses/presentation/quick_booking/nurse_quick_booking_screen.dart';
 import '../features/nurses/presentation/tracker/nurse_booking_tracker_screen.dart';
+import '../features/profile/presentation/faq_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/services/presentation/category_services_screen.dart';
 import '../features/services/presentation/service_detail_screen.dart';
@@ -136,6 +137,10 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+    ),
+    GoRoute(
+      path: '/faq',
+      builder: (context, state) => const FaqScreen(),
     ),
   ],
 );

@@ -16,6 +16,7 @@ const _iconsByKey = <String, IconData>{
   'wallet': Icons.account_balance_wallet_outlined,
   'gift': Icons.card_giftcard_outlined,
   'support': Icons.support_agent_outlined,
+  'faq': Icons.help_outline_rounded,
 };
 
 class ProfileScreen extends ConsumerWidget {
@@ -80,10 +81,32 @@ class _ProfileBody extends StatelessWidget {
       children: [
         Container(
           color: AppColors.background,
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 32),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Align(
+                alignment: Alignment.centerLeft,
+                child: InkWell(
+                  onTap: () {
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/');
+                    }
+                  },
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.card,
+                      shape: BoxShape.circle,
+                      border: Border.all(color: AppColors.border),
+                    ),
+                    child: const Icon(Icons.arrow_back_rounded, size: 18, color: AppColors.ink),
+                  ),
+                ),
+              ),
               Center(
                 child: Container(
                   width: 88,
@@ -256,6 +279,11 @@ class _ProfileBody extends StatelessWidget {
   }
 }
 
+/// Menu rows that open a page of their own, keyed by `ProfileMenuRow.iconKey`.
+const _routesByKey = <String, String>{
+  'faq': '/faq',
+};
+
 class _MenuRowCard extends StatelessWidget {
   final ProfileMenuRow row;
 
@@ -264,9 +292,11 @@ class _MenuRowCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final icon = _iconsByKey[row.iconKey] ?? Icons.circle_outlined;
+    final route = _routesByKey[row.iconKey];
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Surface(
+        onTap: route == null ? null : () => context.push(route),
         padding: const EdgeInsets.all(14),
         child: Row(
           children: [

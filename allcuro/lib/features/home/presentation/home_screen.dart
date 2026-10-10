@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_theme.dart';
 import '../../../core/ui/app_shell.dart';
+import '../../../core/ui/care_icon.dart';
 import '../../auth/presentation/auth_view_model.dart';
 import '../../auth/presentation/quick_login_sheet.dart';
 
@@ -351,7 +352,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   padding: EdgeInsets.zero,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    childAspectRatio: 0.65,
+                    childAspectRatio: 0.78,
                     crossAxisSpacing: 8,
                     mainAxisSpacing: 10,
                   ),
@@ -360,8 +361,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     final service = matchingMasterServices[index];
                     return _HomeGridItem(
                       title: service.name,
-                      imageAsset: service.imageAsset,
-                      icon: service.icon,
+                      icon: CareIcons.forService(service.id),
+                      tone: CareTone.forCategory(service.mainCategory),
                       onTap: () => context.push('/services/${service.id}'),
                     );
                   },
@@ -408,61 +409,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 crossAxisCount: 4,
-                childAspectRatio: 0.70,
+                childAspectRatio: 0.82,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 10,
                 children: [
                   // 1. Nursing Services
                   _HomeGridItem(
                     title: 'Nursing Services',
-                    imageAsset: 'assets/images/services/nursing_services.jpg',
-                    icon: Icons.medical_services_rounded,
+                    icon: CareIllustrations.nursing,
                     onTap: () => context.push('/category-services/nursing'),
                   ),
                   // 2. Mother & Baby Care
                   _HomeGridItem(
                     title: 'Mother & Baby',
-                    imageAsset: 'assets/images/services/baby_care.jpg',
-                    icon: Icons.child_care_rounded,
+                    icon: CareIllustrations.motherBaby,
                     onTap: () => context.push('/category-services/mother-baby'),
                   ),
                   // 3. Elder Care
                   _HomeGridItem(
                     title: 'Elder Care',
-                    icon: Icons.elderly_rounded,
+                    icon: CareIllustrations.elderCare,
                     onTap: () => context.push('/category-services/elder-care'),
                   ),
                   // 4. Physiotherapy
                   _HomeGridItem(
                     title: 'Physiotherapy',
-                    imageAsset: 'assets/images/services/physiotherapy.jpg',
-                    icon: Icons.accessibility_new_rounded,
+                    icon: CareIllustrations.physio,
                     onTap: () => context.push('/category-services/physiotherapy'),
                   ),
                   // 5. Doctor Visit
                   _HomeGridItem(
                     title: 'Doctor Visit',
-                    imageAsset: 'assets/images/services/doctor_visit.jpg',
-                    icon: Icons.medical_information_rounded,
+                    icon: CareIllustrations.doctor,
                     onTap: () => context.push('/category-services/doctor-care'),
                   ),
                   // 6. Care Centres
                   _HomeGridItem(
                     title: 'Care Centres',
-                    imageAsset: 'assets/images/services/care_centres.jpg',
-                    icon: Icons.apartment_rounded,
+                    icon: CareIllustrations.careCentre,
                     onTap: () => context.push('/centres'),
                   ),
                   // 7. Caregivers
                   _HomeGridItem(
                     title: 'Caregivers',
-                    icon: Icons.volunteer_activism_rounded,
+                    icon: CareIllustrations.caregiver,
                     onTap: () => context.push('/category-services/caregiver'),
                   ),
                   // 8. See All
                   _HomeGridItem(
                     title: 'See All',
-                    icon: Icons.grid_view_rounded,
+                    icon: CareIllustrations.seeAll,
                     isSeeAll: true,
                     onTap: () => context.push('/category-services/all'),
                   ),
@@ -477,101 +473,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             // -----------------------------------------------------------------
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: InkWell(
-                onTap: () {
-                  _handleBookingGuard(() => context.push('/nurse-quick-booking'));
-                },
-                borderRadius: BorderRadius.circular(14),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF0F766E), Color(0xFF115E59)],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: [
-                      BoxShadow(
-                        color: const Color(0xFF0F766E).withValues(alpha: 0.16),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: AppColors.secondaryAccent.withValues(alpha: 0.22),
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: AppColors.secondaryAccent.withValues(alpha: 0.5)),
-                        ),
-                        child: const Icon(Icons.bolt_rounded, size: 22, color: AppColors.secondaryAccent),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                const Text(
-                                  'Need a Nurse in 45 Mins?',
-                                  style: TextStyle(
-                                    fontSize: 13.5,
-                                    fontWeight: FontWeight.w800,
-                                    color: Colors.white,
-                                    letterSpacing: -0.2,
-                                  ),
-                                ),
-                                const SizedBox(width: 6),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.secondaryAccent,
-                                    borderRadius: BorderRadius.circular(AppRadius.pill),
-                                  ),
-                                  child: const Text(
-                                    'EXPRESS',
-                                    style: TextStyle(
-                                      fontSize: 8.5,
-                                      fontWeight: FontWeight.w900,
-                                      letterSpacing: 0.5,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 2),
-                            const Text(
-                              'Emergency injections, dressing & vitals check at doorstep',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: Color(0xFFCCFBF1),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        padding: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.14),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(Icons.arrow_forward_rounded, size: 13, color: Colors.white),
-                      ),
-                    ],
-                  ),
-                ),
+              child: _ExpressNurseBanner(
+                onTap: () => _handleBookingGuard(() => context.push('/nurse-quick-booking')),
               ),
             ),
 
@@ -616,55 +519,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 padding: EdgeInsets.zero,
                 crossAxisCount: 4,
-                childAspectRatio: 0.70,
+                childAspectRatio: 0.82,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 10,
                 children: [
                   _HomeGridItem(
                     title: 'Catheter Care',
-                    imageAsset: 'assets/images/services/catheter_care.jpg',
-                    icon: Icons.medical_services_rounded,
+                    icon: CareIcons.urineBag,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/catheter-care'),
                   ),
                   _HomeGridItem(
                     title: 'Ryles Tube',
-                    imageAsset: 'assets/images/services/ryles_tube.jpg',
-                    icon: Icons.medication_liquid_rounded,
+                    icon: CareIcons.nasalTube,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/ryle-s-tube-care'),
                   ),
                   _HomeGridItem(
                     title: 'Wound Dressing',
-                    imageAsset: 'assets/images/services/wound_dressing.jpg',
-                    icon: Icons.healing_rounded,
+                    icon: CareIcons.bandage,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/wound-dressing'),
                   ),
                   _HomeGridItem(
                     title: 'Injection',
-                    imageAsset: 'assets/images/services/injection.jpg',
-                    icon: Icons.vaccines_rounded,
+                    icon: CareIcons.injection,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/injection-administration'),
                   ),
                   _HomeGridItem(
                     title: 'IV Care',
-                    imageAsset: 'assets/images/services/iv_care.jpg',
-                    icon: Icons.water_drop_rounded,
+                    icon: CareIcons.ivDrip,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/iv-medication-administration'),
                   ),
                   _HomeGridItem(
                     title: 'Tracheostomy',
-                    imageAsset: 'assets/images/services/tracheostomy.jpg',
-                    icon: Icons.masks_rounded,
+                    icon: CareIcons.lungs,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/tracheostomy-care'),
                   ),
                   _HomeGridItem(
                     title: 'Vital Monitoring',
-                    imageAsset: 'assets/images/services/vital_monitoring.jpg',
-                    icon: Icons.monitor_heart_rounded,
+                    icon: CareIcons.vitals,
+                    tone: CareTone.nursing,
                     onTap: () => context.push('/services/vital-signs-check'),
                   ),
                   _HomeGridItem(
                     title: 'See All',
-                    icon: Icons.grid_view_rounded,
+                    icon: CareIcons.seeAll,
+                    tone: CareTone.neutral,
                     isSeeAll: true,
                     onTap: () => context.push('/category-services/nursing'),
                   ),
@@ -679,118 +583,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           // -----------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: InkWell(
-              onTap: () => context.push('/centres'),
-              borderRadius: BorderRadius.circular(AppRadius.xl),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF075985), Color(0xFF0369A1)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(AppRadius.xl),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF075985).withValues(alpha: 0.25),
-                      blurRadius: 14,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 46,
-                          height: 46,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.15),
-                            borderRadius: BorderRadius.circular(AppRadius.lg),
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.25)),
-                          ),
-                          child: const Icon(Icons.apartment_rounded, size: 26, color: Colors.white),
-                        ),
-                        const SizedBox(width: 14),
-                        const Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Text(
-                                    'Explore Health Care Centres',
-                                    style: TextStyle(
-                                      fontSize: 14.5,
-                                      fontWeight: FontWeight.w800,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  SizedBox(width: 6),
-                                  Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
-                                ],
-                              ),
-                              SizedBox(height: 2),
-                              Text(
-                                'Audited 24/7 ICU step-down, rehab & senior living centres',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Color(0xFFE0F2FE),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: const Text(
-                            '✓ Field Audited',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: const Text(
-                            '✓ 1:3 Nurse Ratio',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.18),
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: const Text(
-                            '✓ Doctor on Call',
-                            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            child: _CentresBanner(onTap: () => context.push('/centres')),
           ),
         ],
 
@@ -957,7 +750,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: _QuickProcedureCard(
                         title: 'Injection & IV Care',
                         duration: '30 Mins',
-                        icon: Icons.vaccines_rounded,
+                        icon: CareIcons.injection,
                         tag: 'Quick Visit',
                         onTap: () => context.push('/category-services/nursing'),
                       ),
@@ -967,7 +760,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: _QuickProcedureCard(
                         title: 'Wound Dressing',
                         duration: '45 Mins',
-                        icon: Icons.healing_rounded,
+                        icon: CareIcons.bandage,
                         tag: 'Post-Op / Bedsores',
                         onTap: () => context.push('/category-services/nursing'),
                       ),
@@ -981,7 +774,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: _QuickProcedureCard(
                         title: 'Catheter / Tube Care',
                         duration: '45 Mins',
-                        icon: Icons.medical_services_rounded,
+                        icon: CareIcons.urineBag,
                         tag: 'Sterile Care',
                         onTap: () => context.push('/category-services/nursing'),
                       ),
@@ -991,7 +784,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       child: _QuickProcedureCard(
                         title: 'Elderly Caregiver',
                         duration: '1h / Custom Shift',
-                        icon: Icons.volunteer_activism_rounded,
+                        icon: CareIcons.caregiver,
                         tag: 'Daily Assistance',
                         onTap: () => context.push('/category-services/caregiver'),
                       ),
@@ -1005,7 +798,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const SizedBox(height: 24),
 
           // -----------------------------------------------------------------
-          // 6. HOW HOME CARE WORKS (3 Simple Steps)
+          // 6. HOW HOME CARE WORKS (3-step stepper)
           // -----------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
@@ -1024,46 +817,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ),
 
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Container(
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppRadius.lg),
-                border: Border.all(color: AppColors.border),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: const Column(
-                children: [
-                  _HowItWorksStep(
-                    stepNumber: '1',
-                    title: 'Select Service & Duration',
-                    subtitle: 'Choose between 30-min quick visits, hourly attention, or full 12/24-hour shifts.',
-                    icon: Icons.timer_outlined,
-                  ),
-                  Divider(height: 24, thickness: 0.8),
-                  _HowItWorksStep(
-                    stepNumber: '2',
-                    title: 'Verified Clinician Assigned',
-                    subtitle: 'Degree-certified, police-verified nurse or caregiver arrives at your doorstep.',
-                    icon: Icons.verified_user_outlined,
-                  ),
-                  Divider(height: 24, thickness: 0.8),
-                  _HowItWorksStep(
-                    stepNumber: '3',
-                    title: 'Supervised Care at Home',
-                    subtitle: 'Real-time vitals logging and 24/7 senior medical supervisor support.',
-                    icon: Icons.health_and_safety_outlined,
-                  ),
-                ],
-              ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                _HowItWorksStep(
+                  title: 'Choose service & duration',
+                  subtitle: '30-min quick visits, hourly attention, or full 12/24-hour shifts.',
+                  icon: CareIcons.clipboard,
+                ),
+                _HowItWorksStep(
+                  title: 'Verified clinician assigned',
+                  subtitle: 'A degree-certified, police-verified nurse or caregiver comes to your door.',
+                  icon: CareIcons.nursing,
+                ),
+                _HowItWorksStep(
+                  title: 'Supervised care at home',
+                  subtitle: 'Real-time vitals logging with a senior medical supervisor on call.',
+                  icon: CareIcons.homeNurse,
+                  isLast: true,
+                ),
+              ],
             ),
           ),
 
@@ -1141,55 +915,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
 
           const SizedBox(height: 24),
-
-          // -----------------------------------------------------------------
-          // 8. FREQUENTLY ASKED QUESTIONS
-          // -----------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text(
-                  'Frequently Asked Questions',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800, color: AppColors.ink),
-                ),
-                Text(
-                  'Everything you need to know about home health care',
-                  style: TextStyle(fontSize: 11, color: AppColors.mutedForeground),
-                ),
-              ],
-            ),
-          ),
-
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: const [
-                _FaqTile(
-                  question: 'Can I book a nurse for just 30 minutes?',
-                  answer: 'Yes! For procedures like IV injections, wound dressing, or catheterization, you can book a 30-minute or 45-minute quick visit without paying for a full shift.',
-                ),
-                SizedBox(height: 8),
-                _FaqTile(
-                  question: 'How quickly can a clinician reach my home?',
-                  answer: 'Our verified clinicians are stationed across primary city sectors. For urgent requirements, an available clinician can reach your doorstep within 45 to 60 minutes.',
-                ),
-                SizedBox(height: 8),
-                _FaqTile(
-                  question: 'Are caregivers different from registered nurses?',
-                  answer: 'Yes. Registered nurses hold B.Sc or GNM degrees for clinical procedures, injections, and post-op care. Caregivers assist with daily living activities, mobility, and companionship.',
-                ),
-                SizedBox(height: 8),
-                _FaqTile(
-                  question: 'Can I replace or reschedule if needed?',
-                  answer: 'Yes. You can reschedule easily or request clinician replacement through our 24/7 care support desk with zero penalty.',
-                ),
-              ],
-            ),
-          ),
-
-          const SizedBox(height: 32),
 
           // -----------------------------------------------------------------
           // 8. ALLCURO BRANDING, ICON & TRUST FOOTER (At the Bottom of App)
@@ -1293,67 +1018,32 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 // ---------------------------------------------------------------------------
 class _HomeGridItem extends StatelessWidget {
   final String title;
-  final IconData? icon;
+
+  /// A [CareIllustrations] asset, or a [CareIcons] glyph when [tone] is set.
+  final String icon;
+
+  /// Tints a line-icon tile; leave null to show a category illustration.
+  final CareTone? tone;
   final VoidCallback onTap;
   final bool isSeeAll;
-  final String? imageAsset;
 
   const _HomeGridItem({
     required this.title,
-    this.icon,
+    required this.icon,
+    this.tone,
     required this.onTap,
     this.isSeeAll = false,
-    this.imageAsset,
   });
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(18),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 72,
-            height: 68,
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: isSeeAll ? AppColors.primary.withValues(alpha: 0.35) : const Color(0xFFE5E7EB),
-                width: isSeeAll ? 1.5 : 1,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.03),
-                  blurRadius: 5,
-                  offset: const Offset(0, 1.5),
-                ),
-              ],
-            ),
-            child: Center(
-              child: imageAsset != null
-                  ? Image.asset(
-                      imageAsset!,
-                      fit: BoxFit.contain,
-                      cacheWidth: 150,
-                      cacheHeight: 150,
-                      filterQuality: FilterQuality.medium,
-                      errorBuilder: (_, _, _) => Icon(
-                        icon ?? Icons.medical_services_rounded,
-                        size: isSeeAll ? 26 : 28,
-                        color: isSeeAll ? AppColors.primary : const Color(0xFF475569),
-                      ),
-                    )
-                  : Icon(
-                      icon ?? Icons.medical_services_rounded,
-                      size: isSeeAll ? 26 : 28,
-                      color: isSeeAll ? AppColors.primary : const Color(0xFF475569),
-                    ),
-            ),
-          ),
+          tone == null ? CareIllustrationTile(asset: icon) : CareIconTile(asset: icon, tone: tone!),
           const SizedBox(height: 8),
           Text(
             title,
@@ -1376,12 +1066,270 @@ class _HomeGridItem extends StatelessWidget {
 
 
 // ---------------------------------------------------------------------------
+// EXPRESS 45-MIN NURSE BANNER (light rose card, pulsing bolt, press feedback)
+// ---------------------------------------------------------------------------
+class _ExpressNurseBanner extends StatefulWidget {
+  final VoidCallback onTap;
+
+  const _ExpressNurseBanner({required this.onTap});
+
+  @override
+  State<_ExpressNurseBanner> createState() => _ExpressNurseBannerState();
+}
+
+class _ExpressNurseBannerState extends State<_ExpressNurseBanner> with SingleTickerProviderStateMixin {
+  static const _rose = Color(0xFFE11D48);
+  static const _roseWash = Color(0xFFFFF1F3);
+  static const _roseBorder = Color(0xFFFFE0E6);
+
+  late final AnimationController _pulse = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  )..repeat();
+  bool _pressed = false;
+
+  @override
+  void dispose() {
+    _pulse.dispose();
+    super.dispose();
+  }
+
+  void _setPressed(bool v) => setState(() => _pressed = v);
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTapDown: (_) => _setPressed(true),
+      onTapUp: (_) => _setPressed(false),
+      onTapCancel: () => _setPressed(false),
+      onTap: widget.onTap,
+      child: AnimatedScale(
+        scale: _pressed ? 0.97 : 1,
+        duration: const Duration(milliseconds: 120),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+          decoration: BoxDecoration(
+            color: _pressed ? const Color(0xFFFFE8EC) : _roseWash,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            border: Border.all(color: _roseBorder),
+          ),
+          child: Row(
+            children: [
+              // Bolt with a soft radar pulse
+              SizedBox(
+                width: 46,
+                height: 46,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AnimatedBuilder(
+                      animation: _pulse,
+                      builder: (_, _) => Transform.scale(
+                        scale: 0.8 + 0.4 * _pulse.value,
+                        child: Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: _rose.withValues(alpha: 0.22 * (1 - _pulse.value)),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Container(
+                      width: 36,
+                      height: 36,
+                      alignment: Alignment.center,
+                      decoration: const BoxDecoration(color: _rose, shape: BoxShape.circle),
+                      child: const CareIcon(CareIcons.quick, color: Colors.white, size: 20),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Need a nurse in 45 mins?',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                        color: AppColors.ink,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        Container(
+                          width: 6,
+                          height: 6,
+                          decoration: const BoxDecoration(color: AppColors.success, shape: BoxShape.circle),
+                        ),
+                        const SizedBox(width: 5),
+                        const Flexible(
+                          child: Text(
+                            'Nurses available near you',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.mutedForeground,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _rose,
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Book',
+                      style: TextStyle(fontSize: 12.5, fontWeight: FontWeight.w800, color: Colors.white),
+                    ),
+                    SizedBox(width: 4),
+                    Icon(Icons.arrow_forward_rounded, size: 14, color: Colors.white),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// EXPLORE HEALTH CARE CENTRES BANNER (photo card with brand-green scrim)
+// ---------------------------------------------------------------------------
+class _CentresBanner extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _CentresBanner({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      child: SizedBox(
+        height: 156,
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Image.asset(
+              'assets/images/centre-1.jpg',
+              fit: BoxFit.cover,
+              alignment: const Alignment(0.4, 0),
+              cacheWidth: 900,
+            ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: [Color(0xF20C341E), Color(0xB30C341E), Color(0x000C341E)],
+                  stops: [0.0, 0.5, 0.95],
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 14, 16, 14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.16),
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.verified_rounded, size: 12, color: Color(0xFFBBF7D0)),
+                        SizedBox(width: 4),
+                        Text(
+                          'Field audited',
+                          style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: Colors.white),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Spacer(),
+                  const Text(
+                    'Explore Health Care\nCentres',
+                    style: TextStyle(
+                      fontSize: 17,
+                      height: 1.15,
+                      fontWeight: FontWeight.w800,
+                      letterSpacing: -0.3,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  const Text(
+                    'ICU step-down, rehab & senior living',
+                    style: TextStyle(fontSize: 11.5, color: Color(0xFFD7EBDD)),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'View centres',
+                          style: TextStyle(fontSize: 11.5, fontWeight: FontWeight.w800, color: AppColors.primary),
+                        ),
+                        SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_rounded, size: 13, color: AppColors.primary),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned.fill(
+              child: Material(
+                type: MaterialType.transparency,
+                child: InkWell(onTap: onTap),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
 // QUICK PROCEDURE CARD
 // ---------------------------------------------------------------------------
 class _QuickProcedureCard extends StatelessWidget {
   final String title;
   final String duration;
-  final IconData icon;
+  final String icon;
   final String tag;
   final VoidCallback onTap;
 
@@ -1426,7 +1374,7 @@ class _QuickProcedureCard extends StatelessWidget {
                     color: AppColors.primarySoft,
                     borderRadius: BorderRadius.circular(AppRadius.md),
                   ),
-                  child: Icon(icon, color: AppColors.primary, size: 20),
+                  child: CareIcon(icon, color: AppColors.primary, size: 21),
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
@@ -1476,66 +1424,73 @@ class _QuickProcedureCard extends StatelessWidget {
 // HOW IT WORKS STEP
 // ---------------------------------------------------------------------------
 class _HowItWorksStep extends StatelessWidget {
-  final String stepNumber;
   final String title;
   final String subtitle;
-  final IconData icon;
+  final String icon;
+  final bool isLast;
 
   const _HowItWorksStep({
-    required this.stepNumber,
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.isLast = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 34,
-          height: 34,
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: AppColors.primarySoft,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-          ),
-          child: Text(
-            stepNumber,
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w900,
-              color: AppColors.primary,
+    return IntrinsicHeight(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Rail: icon node + connector to the next step
+          SizedBox(
+            width: 40,
+            child: Column(
+              children: [
+                CareIconTile(
+                  asset: icon,
+                  tone: CareTone.nursing,
+                  width: 40,
+                  height: 40,
+                  iconSize: 22,
+                  radius: 20,
+                ),
+                if (!isLast)
+                  Expanded(
+                    child: Container(
+                      width: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(1),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.only(top: 2, bottom: isLast ? 0 : 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(fontSize: 13.5, fontWeight: FontWeight.w800, color: AppColors.ink),
+                  ),
+                  const SizedBox(height: 3),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(fontSize: 11.5, height: 1.4, color: AppColors.mutedForeground),
+                  ),
+                ],
               ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 11,
-                  color: AppColors.mutedForeground,
-                  height: 1.35,
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -1588,79 +1543,6 @@ class _WhyTrustCard extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-// FAQ EXPANDABLE TILE
-// ---------------------------------------------------------------------------
-class _FaqTile extends StatefulWidget {
-  final String question;
-  final String answer;
-
-  const _FaqTile({
-    required this.question,
-    required this.answer,
-  });
-
-  @override
-  State<_FaqTile> createState() => _FaqTileState();
-}
-
-class _FaqTileState extends State<_FaqTile> {
-  bool _expanded = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        border: Border.all(color: AppColors.border),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: () => setState(() => _expanded = !_expanded),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.question,
-                      style: const TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
-                      ),
-                    ),
-                  ),
-                  Icon(
-                    _expanded ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
-                    size: 18,
-                    color: AppColors.mutedForeground,
-                  ),
-                ],
-              ),
-              if (_expanded) ...[
-                const SizedBox(height: 8),
-                Text(
-                  widget.answer,
-                  style: const TextStyle(
-                    fontSize: 11.5,
-                    color: Color(0xFF475569),
-                    height: 1.4,
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ),
       ),
     );
   }

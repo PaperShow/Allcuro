@@ -22,5 +22,6 @@ const _profile = Profile(
     ProfileMenuRow(iconKey: 'wallet', label: 'ALLCURO credits', hint: '₹500'),
     ProfileMenuRow(iconKey: 'gift', label: 'Refer a family', hint: 'Earn ₹500'),
     ProfileMenuRow(iconKey: 'support', label: 'Help & SOS', hint: '24/7'),
+    ProfileMenuRow(iconKey: 'faq', label: 'FAQs', hint: 'Common questions about home care'),
   ],
 );

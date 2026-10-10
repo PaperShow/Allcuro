@@ -135,165 +135,204 @@ class AppShell extends ConsumerWidget {
     }
     final showVisitPopup = activeNurseBooking != null && currentPath == '/';
 
+    // Only the bottom-nav root pages carry the green location header; every
+    // page opened on top of them gets a plain white surface instead. Decided
+    // from the real route, since inner pages pass a tab path in [currentPath]
+    // just to highlight that tab.
+    final routePath = GoRouterState.of(context).uri.path;
+    final isTabRoot = _tabs.any((t) => t.path == routePath);
+
     return Scaffold(
-      backgroundColor: Colors.transparent,
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
-        child: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return [
-              SliverPersistentHeader(
-                pinned: true,
-                delegate: _CompactHeaderDelegate(
-                  topPadding: topPadding,
-                  currentPath: currentPath,
-                  address: effectiveAddress,
-                  arrivalTime: effectiveArrivalTime,
-                  onAddressTap: onAddressTap,
-                  onNotificationsTap: onNotificationsTap,
-                  onProfileTap: onProfileTap,
-                  initials: initials,
-                  notificationCount: notificationCount,
-                ),
-              ),
-            ];
-          },
-          body: DecoratedBox(
-            decoration: const BoxDecoration(
-              color: AppColors.card,
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(AppRadius.xxxl),
+      backgroundColor: isTabRoot ? Colors.transparent : AppColors.card,
+      body: isTabRoot
+          ? _buildHeaderBody(topPadding, effectiveAddress, effectiveArrivalTime)
+          : _buildPlainBody(),
+      bottomNavigationBar: _buildBottomNav(
+        context,
+        showVisitPopup,
+        activeNurseBooking,
+      ),
+    );
+  }
+
+  Widget _buildPlainBody() {
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.dark,
+      child: SafeArea(bottom: false, child: child),
+    );
+  }
+
+  Widget _buildHeaderBody(
+    double topPadding,
+    String effectiveAddress,
+    String effectiveArrivalTime,
+  ) {
+    return Container(
+      width: double.infinity,
+      height: double.infinity,
+      decoration: const BoxDecoration(gradient: AppColors.gradientPrimary),
+      child: NestedScrollView(
+        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+          return [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _CompactHeaderDelegate(
+                topPadding: topPadding,
+                currentPath: currentPath,
+                address: effectiveAddress,
+                arrivalTime: effectiveArrivalTime,
+                onAddressTap: onAddressTap,
+                onNotificationsTap: onNotificationsTap,
+                onProfileTap: onProfileTap,
+                initials: initials,
+                notificationCount: notificationCount,
               ),
             ),
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(AppRadius.xxxl),
-              ),
-              child: child,
+          ];
+        },
+        body: DecoratedBox(
+          decoration: const BoxDecoration(
+            color: AppColors.card,
+            borderRadius: BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xxxl),
             ),
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(AppRadius.xxxl),
+            ),
+            child: child,
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: ColoredBox(
-          color: AppColors.card,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (showVisitPopup)
-                _MinimalActiveNurseVisitPopup(booking: activeNurseBooking),
-              ?bottomBar,
-              DecoratedBox(
-                decoration: const BoxDecoration(
-                  border: Border(top: BorderSide(color: AppColors.border)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
-                  child: Row(
-                    children: _tabs.map((tab) {
-                      final active = _isActive(tab);
-                      return Expanded(
-                        child: Material(
-                          type: MaterialType.transparency,
-                          child: InkResponse(
-                            onTap: () {
-                              if (currentPath != tab.path) context.go(tab.path);
-                            },
-                            radius: 40,
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                if (tab.isSpecial)
-                                  Container(
-                                    width: 36,
-                                    height: 36,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      gradient: active
-                                          ? const LinearGradient(
-                                              colors: [
-                                                AppColors.secondaryAccent,
-                                                Color(0xFFF97316),
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
-                                            )
-                                          : LinearGradient(
-                                              colors: [
-                                                AppColors.secondaryAccentSoft,
-                                                AppColors.secondaryAccentBorder.withValues(alpha: 0.6),
-                                              ],
-                                              begin: Alignment.topLeft,
-                                              end: Alignment.bottomRight,
+    );
+  }
+
+  Widget _buildBottomNav(
+    BuildContext context,
+    bool showVisitPopup,
+    Booking? activeNurseBooking,
+  ) {
+    return SafeArea(
+      top: false,
+      child: ColoredBox(
+        color: AppColors.card,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showVisitPopup)
+              _MinimalActiveNurseVisitPopup(booking: activeNurseBooking!),
+            ?bottomBar,
+            DecoratedBox(
+              decoration: const BoxDecoration(
+                border: Border(top: BorderSide(color: AppColors.border)),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(6, 6, 6, 8),
+                child: Row(
+                  children: _tabs.map((tab) {
+                    final active = _isActive(tab);
+                    return Expanded(
+                      child: Material(
+                        type: MaterialType.transparency,
+                        child: InkResponse(
+                          onTap: () {
+                            if (currentPath != tab.path) context.go(tab.path);
+                          },
+                          radius: 40,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (tab.isSpecial)
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    gradient: active
+                                        ? const LinearGradient(
+                                            colors: [
+                                              AppColors.secondaryAccent,
+                                              Color(0xFFF97316),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          )
+                                        : LinearGradient(
+                                            colors: [
+                                              AppColors.secondaryAccentSoft,
+                                              AppColors.secondaryAccentBorder
+                                                  .withValues(alpha: 0.6),
+                                            ],
+                                            begin: Alignment.topLeft,
+                                            end: Alignment.bottomRight,
+                                          ),
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: AppColors.secondaryAccent
+                                            .withValues(
+                                              alpha: active ? 0.35 : 0.15,
                                             ),
-                                      shape: BoxShape.circle,
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: AppColors.secondaryAccent
-                                              .withValues(
-                                                alpha: active ? 0.35 : 0.15,
-                                              ),
-                                          blurRadius: 6,
-                                          offset: const Offset(0, 2),
-                                        ),
-                                      ],
-                                    ),
-                                    child: Icon(
-                                      tab.icon,
-                                      size: 20,
-                                      color: active
-                                          ? Colors.white
-                                          : AppColors.secondaryAccent,
-                                    ),
-                                  )
-                                else
-                                  Container(
-                                    width: 36,
-                                    height: 36,
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      color: active
-                                          ? AppColors.primarySoft
-                                          : Colors.transparent,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Icon(
-                                      tab.icon,
-                                      size: 20,
-                                      color: active
-                                          ? AppColors.primary
-                                          : AppColors.mutedForeground,
-                                    ),
+                                        blurRadius: 6,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
                                   ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  tab.label,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: active
-                                        ? FontWeight.w800
-                                        : FontWeight.w600,
+                                  child: Icon(
+                                    tab.icon,
+                                    size: 20,
                                     color: active
-                                        ? (tab.isSpecial ? AppColors.secondaryAccent : AppColors.primary)
+                                        ? Colors.white
+                                        : AppColors.secondaryAccent,
+                                  ),
+                                )
+                              else
+                                Container(
+                                  width: 36,
+                                  height: 36,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: active
+                                        ? AppColors.primarySoft
+                                        : Colors.transparent,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    tab.icon,
+                                    size: 20,
+                                    color: active
+                                        ? AppColors.primary
                                         : AppColors.mutedForeground,
                                   ),
                                 ),
-                              ],
-                            ),
+                              const SizedBox(height: 2),
+                              Text(
+                                tab.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: active
+                                      ? FontWeight.w800
+                                      : FontWeight.w600,
+                                  color: active
+                                      ? (tab.isSpecial
+                                            ? AppColors.secondaryAccent
+                                            : AppColors.primary)
+                                      : AppColors.mutedForeground,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    );
+                  }).toList(),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
