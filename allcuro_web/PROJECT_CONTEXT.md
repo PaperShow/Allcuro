@@ -76,14 +76,14 @@ Tokens in `src/index.css` mirror `AppColors` / `AppRadius` in `allcuro/lib/core/
 
 1. **Services first.** The hero category tiles are the main way into the site: one tap reaches a category page with every service and its price. Every service in the app catalog must appear on a category page; the dialog only adds detail.
 2. **Elder-friendly by default:**
-   - Base font size is 17px (`font-size: 106.25%` on `:root`). The header "AA" toggle adds `.large-text` (120%), saved in `localStorage` (wrapped in try/catch). Size everything in `rem` so the toggle scales it.
+   - Base font size is 17px (`font-size: 106.25%` on `:root`). Size everything in `rem` so browser zoom / OS text-size settings scale the whole page.
    - Tap targets are at least 44–48px; primary CTAs are 52px.
    - Keep high contrast: body copy uses `--muted-fg: #4F5752`, slightly darker than the app's muted colour.
    - Plain-language copy: short sentences, no jargon in headings.
 3. **Phone is the primary CTA.** Every major section ends in a way to call or WhatsApp. All contact details come from `src/data/site.ts`; never hard-code them.
 4. **No horizontal overflow.** Layout breakpoints are 1080 / 880 / 640px. On phones the category switcher scrolls horizontally inside its own row (the grid track uses `minmax(0, 1fr)` so it cannot widen the page), and the hero tiles drop to 3 columns.
 5. **No unverified claims.** Trust copy must match what the app states (verification, 45–60 min urgent arrival, 24/7 desk). Do not add patient counts or ratings without real data.
-6. **Accessibility:** skip link, `aria-current` on the breadcrumb and active category, `aria-pressed` on the text toggle, native `<dialog>` for modals, `<details>` for the FAQ, visible orange `:focus-visible` ring, and `prefers-reduced-motion` respected.
+6. **Accessibility:** skip link, `aria-current` on the breadcrumb and active category, native `<dialog>` for modals, `<details>` for the FAQ, visible orange `:focus-visible` ring, and `prefers-reduced-motion` respected.
 
 ---
 

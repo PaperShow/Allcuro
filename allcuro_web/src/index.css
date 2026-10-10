@@ -36,11 +36,7 @@
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   scroll-behavior: smooth;
-  scroll-padding-top: 88px;
-}
-
-:root.large-text {
-  font-size: 120%;
+  scroll-padding-top: 76px;
 }
 
 *,
@@ -205,22 +201,27 @@ button {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgb(254 253 252 / 0.92);
-  backdrop-filter: saturate(1.4) blur(12px);
+  background: rgb(254 253 252 / 0.95);
+  backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
 }
 
 .header-inner {
   display: flex;
   align-items: center;
-  gap: 32px;
-  height: 76px;
+  gap: 40px;
+  height: 64px;
 }
 
-.brand {
-  text-decoration: none;
+.wordmark {
   flex-shrink: 0;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  color: var(--primary);
+  text-decoration: none;
 }
+
 
 .logo {
   display: inline-flex;
@@ -268,54 +269,38 @@ button {
 }
 
 .header-phone {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 600;
-  color: var(--primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted-fg);
   text-decoration: none;
   white-space: nowrap;
 }
 
-.text-toggle {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 1px;
-  height: 44px;
-  min-width: 52px;
-  padding: 0 10px;
-  justify-content: center;
-  border: 1.5px solid var(--border);
-  background: var(--card);
-  border-radius: var(--r-sm);
-  font-weight: 600;
+.header-phone:hover {
   color: var(--primary);
-  line-height: 44px;
 }
 
-.text-toggle .a-sm {
-  font-size: 0.8rem;
+.header-cta {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 0.88rem;
+  border-radius: var(--r-sm);
 }
 
-.text-toggle .a-lg {
-  font-size: 1.15rem;
-}
 
-.text-toggle[aria-pressed='true'] {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: #fff;
-}
+
+
 
 .menu-btn {
   display: none;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   align-items: center;
   justify-content: center;
-  border: 1.5px solid var(--border);
-  background: var(--card);
+  border: 0;
+  background: none;
   border-radius: var(--r-sm);
+  color: var(--ink);
 }
 
 /* ---------- Hero ---------- */
@@ -888,7 +873,7 @@ button {
   .nav {
     display: none;
     position: absolute;
-    top: 76px;
+    top: 64px;
     left: 0;
     right: 0;
     flex-direction: column;
@@ -1225,7 +1210,7 @@ button {
 
 .cat-side {
   position: sticky;
-  top: 100px;
+  top: 88px;
   background: var(--card);
   border: 1.5px solid var(--border);
   border-radius: var(--r-xl);

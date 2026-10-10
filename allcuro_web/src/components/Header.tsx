@@ -2,8 +2,7 @@ import { useState } from 'react'
 import { ALL_SLUG, categoryPath } from '../data/categories'
 import { site } from '../data/site'
 import { Link } from './Link'
-import { CloseIcon, MenuIcon, PhoneIcon } from './Icons'
-import { Logo } from './Logo'
+import { CloseIcon, MenuIcon } from './Icons'
 
 const links = [
   { href: categoryPath(ALL_SLUG), label: 'Services' },
@@ -12,19 +11,14 @@ const links = [
   { href: '/#faq', label: 'FAQ' },
 ]
 
-interface Props {
-  largeText: boolean
-  onToggleText: () => void
-}
-
-export function Header({ largeText, onToggleText }: Props) {
+export function Header() {
   const [open, setOpen] = useState(false)
 
   return (
     <header className="header">
       <div className="container header-inner">
-        <Link to="/" className="brand" aria-label="ALLCURO home">
-          <Logo />
+        <Link to="/" className="wordmark">
+          ALLCURO
         </Link>
 
         <nav className={`nav ${open ? 'is-open' : ''}`} aria-label="Main">
@@ -34,25 +28,13 @@ export function Header({ largeText, onToggleText }: Props) {
             </Link>
           ))}
           <a className="nav-phone" href={site.phoneHref}>
-            <PhoneIcon size={18} /> Call {site.phoneDisplay}
+            Call {site.phoneDisplay}
           </a>
         </nav>
 
         <div className="header-actions">
-          <button
-            type="button"
-            className="text-toggle"
-            onClick={onToggleText}
-            aria-pressed={largeText}
-            title={largeText ? 'Use normal text size' : 'Make text larger'}
-          >
-            <span className="a-sm" aria-hidden="true">A</span>
-            <span className="a-lg" aria-hidden="true">A</span>
-            <span className="sr-only">{largeText ? 'Use normal text size' : 'Make text larger'}</span>
-          </button>
           <a className="header-phone" href={site.phoneHref}>
-            <PhoneIcon size={18} />
-            <span>{site.phoneDisplay}</span>
+            {site.phoneDisplay}
           </a>
           <Link className="btn btn-primary header-cta" to={categoryPath(ALL_SLUG)}>
             Book a visit
